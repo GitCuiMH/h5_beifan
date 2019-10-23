@@ -14,12 +14,10 @@
     <div v-if="pageData.length > 0 && bAjax" v-for="(item, index) in pageData" :key="index" class="tlist">
       <div class="litem">
         <div class="sid">订单号  {{ item.hisOrdNum }}</div>
-        <!-- <div class="contitle">{{ item.PayType === 'CZ' ? payTypes[item.PayType] + '(' + czTypes[item.payBusCnl] + ')' : payTypes[item.PayType] }}</div> -->
         <div class="contitle">{{ item.PayType === '充值' ? item.PayType + '(' + item.payBusCnl + ')' : item.PayType }}</div>
         <div class="stime">{{ item.payTime }}</div>
       </div>
       <div :class="{ czNUM: item.PayType === '充值' }" class="mNumber">{{ item.PayType === '充值' ? '+' + formatPrice(item.payAmt) + '元' : '-' + formatPrice(item.payAmt) + '元' }}</div>
-      <!-- <div class="rightIcon"/> -->
     </div>
     <div v-if="pageData.length > 0 && bAjax" class="allload">- 已全部加载 -</div>
     <div v-if="showLayer" class="popLayer" @click="closeLayer">
@@ -51,8 +49,8 @@ const userModule = namespace('user')
 })
 export default class ChongZhiRecord extends Vue {
   @userModule.Mutation('TOGGLE_INFO') private toggleInfo: any
-  private userInfo: any = JSON.parse(Cookies.get('user') as string)
-  private bAjax: boolean = false
+  // private userInfo: any = JSON.parse(Cookies.get('user') as string)
+  private bAjax: boolean = true
   private beginDate: string = '开始日期'
   private endDate: string = '结束日期'
   private currentDate: any = '结束日期'
@@ -73,15 +71,15 @@ export default class ChongZhiRecord extends Vue {
   private mounted(): void {
     this.currentDate = new Date()
     document.title = '充值记录查询'
-    const tempData = {
-      itemType: parseInt(this.userInfo.itemType, 10),
-      itemNo: this.userInfo.itemNo
-    }
-    getDate().then((res: any) => {
-      this.beginDate = res.datas.begin
-      this.endDate = res.datas.end
-      this.searchData()
-    })
+    // const tempData = {
+    //   itemType: parseInt(this.userInfo.itemType, 10),
+    //   itemNo: this.userInfo.itemNo
+    // }
+    // getDate().then((res: any) => {
+    //   this.beginDate = res.datas.begin
+    //   this.endDate = res.datas.end
+    //   this.searchData()
+    // })
 
   }
   private confirmBirth(val: any): void {
@@ -103,29 +101,29 @@ export default class ChongZhiRecord extends Vue {
     return (parseInt(price, 10) / 100).toFixed(2)
   }
   private searchData(): void {
-    const tempData = {
-      // itemType: this.userInfo.itemType,
-      itemType: 1,
-      itemNo: this.userInfo.itemNo,
-      beginDate: this.beginDate,
-      endDate: this.endDate
-    }
-    if (tempData.beginDate.length < 8) {
-      this.$toast('请选择开始日期')
-      return
-    }
-    if (tempData.endDate.length < 8) {
-      this.$toast('请选择结束日期')
-      return
-    }
-    getRecord(tempData).then((res: any) => {
-      this.bAjax = true
-      this.pageData = res.datas.item
-      console.log(this.pageData);
-    }).catch((res2) => {
-      this.pageData = []
-      this.bAjax = true
-    })
+    // const tempData = {
+    //   // itemType: this.userInfo.itemType,
+    //   itemType: 1,
+    //   itemNo: this.userInfo.itemNo,
+    //   beginDate: this.beginDate,
+    //   endDate: this.endDate
+    // }
+    // if (tempData.beginDate.length < 8) {
+    //   this.$toast('请选择开始日期')
+    //   return
+    // }
+    // if (tempData.endDate.length < 8) {
+    //   this.$toast('请选择结束日期')
+    //   return
+    // }
+    // getRecord(tempData).then((res: any) => {
+    //   this.bAjax = true
+    //   this.pageData = res.datas.item
+    //   console.log(this.pageData);
+    // }).catch((res2) => {
+    //   this.pageData = []
+    //   this.bAjax = true
+    // })
   }
   private closeLayer(): void {
     const self = this
@@ -146,7 +144,7 @@ export default class ChongZhiRecord extends Vue {
       selfAmt: '233223'
     }
     this.toggleInfo(temp)
-    this.$router.push('/jiaofeidetail/' + this.userInfo.itemType + '/' + this.userInfo.itemNo)
+    // this.$router.push('/jiaofeidetail/' + this.userInfo.itemType + '/' + this.userInfo.itemNo)
   }
 }
 

@@ -38,23 +38,23 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     setLoading(false)
-    // return Promise.reject(response)
-    if (response.data.status === 1) {
-      return Promise.resolve(response.data)
-    } else if (response.data.status === 0) {
-      Toast(response.data.message)
-      return Promise.reject(response)
-    } else {
-      Toast(response.data.message)
-      Cookies.remove('x_tk')
-      window.location.href = 'http://webapp.wdfybj.com/wlhis/index.html'
-      return Promise.reject(response)
-    }
+    return Promise.reject(response)
+    // if (response.data.status === 1) {
+    //   return Promise.resolve(response.data)
+    // } else if (response.data.status === 0) {
+    //   Toast(response.data.message)
+    //   return Promise.reject(response)
+    // } else {
+    //   Toast(response.data.message)
+    //   Cookies.remove('x_tk')
+    //   window.location.href = 'http://webapp.wdfybj.com/wlhis/index.html'
+    //   return Promise.reject(response)
+    // }
   },
   (error: any) => {
     setLoading(false)
-    Cookies.remove('x_tk')
-    window.location.href = 'http://webapp.wdfybj.com/wlhis/index.html'
+    // Cookies.remove('x_tk')
+    // window.location.href = 'http://webapp.wdfybj.com/wlhis/index.html'
     return Promise.reject(error)
   }
 )
