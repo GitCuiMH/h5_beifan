@@ -2,9 +2,8 @@ import { Commit } from 'vuex'
 export default{
   namespaced: true,
   state: {
-    jiaofeiinfo: {},
-    fDetail: {},
-    checkDetail: {},
+    addrInfo: {},
+
     docInfos: {},
     userList: [],
     guahaoInfos: -1,
@@ -14,6 +13,9 @@ export default{
     value: 'uservalue'
   },
   mutations: {
+    SET_ADDRINFO: (state: any, infos: any) => {
+      state.addrInfo = infos
+    },
     TOGGLE_VALUE: (state: any, device: string) => {
       state.value = device
     },
@@ -23,20 +25,11 @@ export default{
     TOGGLE_USERLISTS: (state: any, infos: number) => {
       state.userList = infos
     },
-    TOGGLE_CDTL: (state: any, info: string) => {
-      state.checkDetail = info
-    },
     TOGGLE_DOCINFO: (state: any, info: string) => {
       state.docInfos = info
     },
     TOGGLE_LOADING: (state: any, device: boolean) => {
       state.loading = device
-    },
-    TOGGLE_INFO: (state: any, info: any) => {
-      state.jiaofeiinfo = info
-    },
-    TOGGLE_FDTL: (state: any, info: any) => {
-      state.fDetail = info
     },
     TOGGLE_NAME: (state: any, device: string) => {
       state.name = device

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <transition :name="transitionName">
-      <keep-alive include="FList,GuaHao,ChongZhiRecord">
+      <keep-alive include="Main,GuaHao,ChongZhiRecord">
         <router-view class="child-view totalBox"/>
       </keep-alive>
     </transition>

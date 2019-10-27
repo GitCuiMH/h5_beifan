@@ -22,26 +22,60 @@ export default new Router({
       component: () => import('@/views/main.vue'),
     },
 
-    // 个人中心
+    // 个人中心-我的代理
     {
-      path: '/self',
-      name: 'Self',
-      component: () => import('@/views/self/index.vue'),
+      path: '/proxy',
+      name: 'Proxy',
+      component: () => import('@/views/self/proxy.vue'),
     },
-    // 切换就诊人
+    // 个人中心-收货地址
     {
-      path: '/switchUsers',
-      name: 'SwitchUsers',
-      component: () => import('@/views/self/switchUsers.vue'),
+      path: '/address',
+      name: 'Address',
+      component: () => import('@/views/self/address.vue'),
     },
-    // 余额查询
+    // 个人中心-编辑地址
     {
-      path: '/yue',
-      name: 'Yue',
-      component: () => import('@/views/self/yue.vue'),
+      path: '/editaddr/:id',
+      name: 'EditAddr',
+      component: () => import('@/views/self/editaddr.vue'),
     },
-
-
+    // 个人中心-二维码收款
+    {
+      path: '/qrcode',
+      name: 'QrCode',
+      component: () => import('@/views/self/qrcode.vue'),
+    },
+    // 个人中心-我的订单
+    {
+      path: '/myorder/:idx',
+      name: 'MyOrder',
+      component: () => import('@/views/self/myorder.vue'),
+    },
+    // 个人中心-账单细节
+    {
+      path: '/zdlist',
+      name: 'ZdList',
+      component: () => import('@/views/self/list.vue'),
+    },
+    // 个人中心-账号设置
+    {
+      path: '/set',
+      name: 'Set',
+      component: () => import('@/views/self/set.vue'),
+    },
+    // 个人中心-账号设置
+    {
+      path: '/edit',
+      name: 'Edit',
+      component: () => import('@/views/self/edit.vue'),
+    },
+    // 个人中心-实名认证
+    {
+      path: '/renzheng',
+      name: 'RenZheng',
+      component: () => import('@/views/self/renzheng.vue'),
+    },
     // 门诊待缴费
     {
       path: '/jiaofei',

@@ -1,0 +1,12 @@
+@function pm($pt) {
+  @return $pt / 37.5 + rem
+}
+@mixin wh($w, $h){
+  width: pm($w);
+  height: pm($h);
+};
+@mixin bk($u){
+  background: url($u) no-repeat;
+  background-size: 100% 100%;
+}
+$m: rgba(244, 176, 62, 1);

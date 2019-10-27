@@ -1,89 +1,25 @@
-export const dataList = [{
-  title: '快捷功能',
-  icons: [
-    {
-      icon: 'add.png',
-      name: '在线挂号',
-      url: '/infoManage/guahao'
-    }, {
-      icon: 'cz.png',
-      name: '门诊充值',
-      url: '/infoManage/chongzhi'
-    }, {
-      icon: 'pages.png',
-      name: '余额查询',
-      url: '/infoManage/yue'
-    }, {
-      icon: 'stars.png',
-      name: '我的收藏',
-      url: '/catchList'
-    }
-  ]
-}, {
-  title: '门诊功能',
-  icons: [
-    {
-      icon: 'jf.png',
-      name: '门诊缴费',
-      url: '/infoManage/jiaofei'
-    }, {
-      icon: 'group.png',
-      name: '添加就诊人',
-      url: '/add'
-    }, {
-      icon: 'report.png',
-      name: '报告查询',
-      url: '/infoManage/checkResult'
-    }, {
-      icon: 'manager.png',
-      name: '就诊人管理',
-      url: '/infoManage/detail'
-    },
-    {
-      icon: 'record.png',
-      name: '挂号记录',
-      url: '/infoManage/grecord'
-    }, {
-      icon: 'jiaofei.png',
-      name: '缴费记录',
-      url: '/infoManage/fList'
-    }, {
-      icon: 'chongzhi.png',
-      name: '充值记录',
-      url: '/infoManage/chongzhirecord'
-    }, {
-      icon: 'user.png',
-      name: '个人中心',
-      url: '/self'
-    }
-  ]
-}, {
-  title: '医院信息',
-  icons: [
-    {
-      type: 1,
-      icon: 'ks.png',
-      name: '科室介绍',
-      url: '/deptlist'
-    }, {
-      type: 2,
-      icon: 'doc.png',
-      name: '医生介绍',
-      url: '/deptlist'
-    }, {
-      mark: 1,
-      icon: 'intro.png',
-      name: '中心简介',
-      url: 'https://wx.wdfybj.com/a/entrance?lm=yyjs'
-    }, {
-      mark: 1,
-      icon: 'daohang.png',
-      name: '来院导航',
-      url: 'https://surl.amap.com/fys5mL193Lo'
-    }
-  ]
-}]
-
+export const lvList = [
+  {
+    id: 1,
+    lvname: '城市合伙人'
+  },
+  {
+    id: 2,
+    lvname: '黄金合伙人'
+  }, {
+    id: 3,
+    lvname: '至尊合伙人'
+  }, {
+    id: 4,
+    lvname: '钻石合伙人'
+  }, {
+    id: 5,
+    lvname: '候选股东'
+  }, {
+    id: 6,
+    lvname: '股东'
+  }
+]
 
 interface ITest {
   name: string,

@@ -51,10 +51,10 @@ export default class InfoManage extends Vue {
       Cookies.set('x_tk', getURLParams().x_tk, { expires: 3.33 })
     } else {
       if (parseInt(this.$route.params.type, 10) === 5) {
-        window.location.href = 'http://wlhis.qs110.com/api/wechat/login/type/5?ss=2&deptCode=' + getURLParams().deptCode + '&doctorCode=' + getURLParams().doctorCode
+        window.location.href = 'http://his.qs110.com/api/wechat/login/type/5?ss=2&deptCode=' + getURLParams().deptCode + '&doctorCode=' + getURLParams().doctorCode
         // console.log('http://gthis.qs110.com//api/wechat/login/type/5?ss=2&deptCode=' + getURLParams().deptCode + '&doctorCode=' + getURLParams().doctorCode);
       } else {
-        window.location.href = 'http://wlhis.qs110.com/api/wechat/login/type/' + this.$route.params.type
+        window.location.href = 'http://his.qs110.com/api/wechat/login/type/' + this.$route.params.type
       }
       return
     }
