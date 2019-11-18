@@ -8,10 +8,19 @@
       <div class="item" :class="{active:tabIdx === 3}" @click="toggleTab(3)">退款/售后</div>
       <div class="item" style="flex: 1"></div>
       <div class="item2">
-        <img src="../../assets/image/catlogo.png" alt="" class="icon">选择日期
+        <img src="../../assets/image/catlogo.png" alt="" class="icon">
+        <van-dropdown-menu>
+          <van-dropdown-item class="mrpm" @change='dpchange' v-model="dpIndex" :options="dplist" />
+        </van-dropdown-menu>
       </div>
     </div>
-    <div class="list">
+    <van-list
+      class="list"
+      v-model="loading"
+      :finished="finished"
+      finished-text="没有更多了"
+      @load="onLoad"
+    >
       <div class="orderitem boxshadow" v-for="(it, idx) in list" :key="idx">
         <div class="tt">
           {{it.goodsname}}
@@ -35,15 +44,16 @@
             </div>
           </div>
         </div>
-        
       </div>
-    </div>
+    </van-list>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import search from '@/components/search.vue'
+import { dateList, dkind } from '@/utils/mainData'
+import { getList } from '@/api/mainpage'
 @Component({
   components: {
     search
@@ -51,41 +61,46 @@ import search from '@/components/search.vue'
 })
 export default class Order extends Vue {
   private tabIdx: number = 0
-  private list: any[] = [{
-      time: '2019-10-11 13:44:55',
-      pic: '',
-      goodsname: '据说是商品',
-      num: 3,
-      price: '999.9',
-      status: 0
-    }, {
-      time: '2019-10-11 13:44:55',
-      pic: '',
-      goodsname: '据说是商品',
-      num: 3,
-      price: '999.9',
-      status: 1
-    }, {
-      time: '2019-10-11 13:44:55',
-      pic: '',
-      goodsname: '据说是商品',
-      num: 3,
-      price: '999.9',
-      status: 2
-    }, {
-      time: '2019-10-11 13:44:55',
-      pic: '',
-      goodsname: '据说是商品',
-      num: 3,
-      price: '999.9',
-      status: 3
-    }]
-    private search(e: string): void {
-      this.$emit('search', e)
+  private searchkey: string = ''
+  private loading: boolean = false
+  private finished: boolean = false
+  private page: number = 1
+  private dpIndex: number = 0
+  private dplist: any = dateList
+  private list: any[] = []
+  private mounted() {
+    this.getData()
+  }
+  private search(e: string): void {
+    this.searchkey = e
+  }
+  private toggleTab(idx: number): void {
+    this.tabIdx = idx
+  }
+  private getData(p = 1) {
+    this.loading = true
+    getList({status: 0, page: p, key: this.searchkey}).then((res: any) => {
+      // console.log(res);
+      this.loading = false
+      if (p > 1) {
+        this.list = this.list.concat(res.datas.data)
+      } else {
+        this.list = res.datas.data
+      }
+      if (this.list.length >= res.datas.total) {
+        this.finished = true
+      }
+    })
+  }
+  private onLoad() {
+    if (this.list.length) {
+      this.page++
+      this.getData(this.page)
     }
-    private toggleTab(idx: number): void {
-      this.tabIdx = idx
-    }
+  }
+  private dpchange() {
+
+  }
 }
 </script>
 
@@ -106,16 +121,16 @@ export default class Order extends Vue {
     background: white;
     margin-top: pm(9);
     height: pm(31);
-    padding: 0 pm(10);
+    padding: 0 pm(18) 0 pm(10);
     .item{
       align-self: center;
       text-align: left;
-      margin-right: .586667rem;
+      margin-right: .486667rem;
       // width: pm(66);
     }
     .icon{
       @include wh(13,13);
-      margin-right: pm(5);
+      // margin-right: pm(5);
     }
     .item2{
       align-self: center;
@@ -145,7 +160,7 @@ export default class Order extends Vue {
     background: #F3F3F3;
     flex: 1;
     overflow: scroll;
-    padding-bottom: pm(30);
+    padding: pm(10) 0 pm(30) 0;
     color: #434343;
     font-size: pm(12);
     .orderitem{

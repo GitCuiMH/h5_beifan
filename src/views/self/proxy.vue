@@ -1,11 +1,24 @@
 <template>
   <div class="containers">
+    <div class="search">
+      <img src="../../assets/index/searchIcon.png" alt="">
+      <input class="reinput" type="text" placeholder="点击输入内容" v-model.trim="searchkey" @keyup.enter="search">
+    </div>
     <div class="header">
-      <div class="all">全部</div>
-      <div class="rightIcon downfront"></div>
+      <!-- <div class="all">全部</div>
+      <div class="rightIcon downfront"></div> -->
+      <van-dropdown-menu>
+        <van-dropdown-item @change='dpchange' v-model="dpIndex" :options="dplist" />
+      </van-dropdown-menu>
       <!-- <div class="all">排序</div> -->
     </div>
-    <div class="list">
+    <van-list
+      class="list"
+      v-model="loading"
+      :finished="finished"
+      finished-text="没有更多了"
+      @load="onLoad"
+    >
       <div class="item boxshadow" v-for="(it, idx) in list" :key="idx">
         <div class="name">{{it.name}} - {{lvlist[parseInt(it.lv, 10) - 1].lvname}}</div>
         <div class="detail">
@@ -25,20 +38,25 @@
           </div>
         </div>
       </div>
-      
-    </div>
+    </van-list>
   </div>
 </template>
 <script lang="ts">
 import { getSelfInfo } from '@/api/hospital'
 import { Component, Vue } from 'vue-property-decorator';
 import { getURLParams } from '@/utils/auth'
-import { lvList } from '@/utils/mainData'
+import { lvList, sexs } from '@/utils/mainData'
 import Cookies from 'js-cookie'
 @Component({
 })
 export default class Proxy extends Vue {
   private pageData: any = {}
+  private searchkey: string = ''
+  private dpIndex: number = 0
+  private loading: boolean = false
+  private finished: boolean = false
+  private page: number = 1
+  private dplist: any = sexs
   private lvlist: any[] = lvList
   private list: any[] = [{
     name: '二兴',
@@ -114,7 +132,32 @@ export default class Proxy extends Vue {
   private mounted(): void {
     document.title = '我的代理'
   }
+  private search(): void {
+    console.log(this.searchkey)
+  }
   private gopage(path: string) {
+  }
+  private dpchange() {
+    console.log(this.dpIndex);
+  }
+  private getData(p = 1) {
+    // this.loading = true
+    // getUserList({type: this.tabIndex, page: p, key: this.searchkey}).then((res: any) => {
+    //   // console.log(res);
+    //   this.loading = false
+    //   if (p > 1) {
+    //     this.datalist = this.datalist.concat(res.datas)
+    //   } else {
+    //     this.datalist = res.datas
+    //   }
+    //   if (this.datalist.length >= res.total) {
+    //     this.finished = true
+    //   }
+    // })
+  }
+  private onLoad() {
+    this.page++
+    this.getData(this.page)
   }
 }
 </script>
@@ -124,7 +167,10 @@ export default class Proxy extends Vue {
   height: 100%;
   display: flex;
   flex-direction: column;
+  background: #F3F3F3;
   .header{
+    background: white;
+    margin-top: pm(10);
     height: pm(42);
     display: flex;
     // justify-content: space-between;
@@ -139,8 +185,8 @@ export default class Proxy extends Vue {
     }
   }
   .list{
+    padding: pm(10) 0 pm(30) 0;
     flex: 1;
-    padding-bottom: pm(30);
     overflow: scroll;
     background: #F3F3F3;
     .item{
@@ -195,6 +241,27 @@ export default class Proxy extends Vue {
         }
       }
     }
+  }
+}
+.search{
+  width: 9.333333rem;
+  height: .853333rem;
+  margin: pm(9) auto 0 auto;
+  display: flex;
+  border-radius: .426667rem;
+  background: white;
+  > * {
+    align-self: center;
+  }
+  img{
+    margin: 0 pm(6.5) 0 .426667rem;
+    width: .4rem;
+    height: .426667rem;
+  }
+  input{
+    flex: 1;
+    color: black;
+    font-size: pm(13);
   }
 }
 </style>

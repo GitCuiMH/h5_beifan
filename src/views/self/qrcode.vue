@@ -13,7 +13,7 @@
           <div class="text">保存收款码</div>
         </div>
       </div>
-      <div class="golist">
+      <div class="golist" @click="$router.push('/zdlist')">
         <img src="../../assets/image/money.png" alt="" class="icon">
         <div class="text">账单细节</div>
         <div class="rightIcon"></div>

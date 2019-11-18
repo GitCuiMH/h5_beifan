@@ -2,23 +2,23 @@
   <div class="conbox">
     <img src="../../assets/index/banner.png" alt="" class="banner">
     <div class="menu boxshadow">
-      <div class="item">
+      <div class="item" @click="gopage('/mnewadd')">
         <img src="../../assets/index/addnew.png" alt="" class="icon">
         <div class="text">新人加盟</div>
       </div>
-      <div class="item">
+      <div class="item" @click="gopage('/mgdcode')">
         <img src="../../assets/index/sao.png" alt="" class="icon">
         <div class="text">商品扫码</div>
       </div>
-      <div class="item">
+      <div class="item" @click="gopage('/mchuhuo')">
         <img src="../../assets/index/chuhuo.png" alt="" class="icon">
         <div class="text">商品出货</div>
       </div>
-      <div class="item">
+      <div class="item" @click="gopage('/mmanager')">
         <img src="../../assets/index/shenhe.png" alt="" class="icon">
         <div class="text">审核管理</div>
       </div>
-      <div class="item">
+      <div class="item" @click="gopage('/mxiadan')">
         <img src="../../assets/index/xiadan.png" alt="" class="icon">
         <div class="text">我要下单</div>
       </div>
@@ -39,9 +39,23 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-
+import { getURLParams } from '@/utils/auth'
+import Cookies from 'js-cookie'
 @Component
 export default class HelloWorld extends Vue {
+  private mounted(): void {
+    document.title = '首页'
+    if (Cookies.get('x_tk')) {
+    } else if (getURLParams().x_tk) {
+      Cookies.set('x_tk', getURLParams().x_tk, { expires: 3.33 })
+    } else {
+      window.location.href = 'http://beifan.400539.com/api/wechat/login/type/main'
+      return
+    }
+  }
+  private gopage(path: string) {
+    this.$router.push(path)
+  }
 }
 </script>
 

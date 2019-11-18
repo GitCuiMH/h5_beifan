@@ -1,6 +1,10 @@
 @function pm($pt) {
   @return $pt / 37.5 + rem
 }
+@mixin bk($u){
+  background: url($u) no-repeat;
+  background-size: 100% 100%;
+}
 $g: #48BCAB;
 $a: #F48015;
 $m: rgba(244, 176, 62, 1);
@@ -117,6 +121,7 @@ input,textarea {
 .rightIcon{
   width: pm(6);
   height: pm(10);
+  align-self: center;
   background: url('../assets/image/rightIcon.png') no-repeat;
   background-size: 100% 100%;
 }
@@ -154,6 +159,9 @@ input,textarea {
   background: $m;
   border-radius: pm(22);
 }
+.forpos{
+  flex: 1;
+}
 .inputblock{
   display: flex;
   color: #434343;
@@ -169,4 +177,17 @@ input,textarea {
   +.inputblock{
     margin-top: pm(13);
   }
+}
+.linebk{
+  width: 100%;
+  height: pm(3);
+  @include bk('../assets/image/linebk.png');
+}
+
+// rewrite
+.van-dropdown-menu{
+  height: 100% !important;
+}
+[class*=van-hairline]::after{
+  border: none !important;
 }

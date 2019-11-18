@@ -16,7 +16,7 @@
 
 <script lang="ts">
 import { setAppName } from '@/store/methods'
-import { getCate } from '@/api/mainpage'
+import {  } from '@/api/mainpage'
 import { setToken } from '@/utils/auth'
 import { Component, Vue } from 'vue-property-decorator';
 import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src

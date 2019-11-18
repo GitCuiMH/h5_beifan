@@ -7,7 +7,7 @@ import { setLoading } from '@/store/methods'
 // create an axios instance
 const service = axios.create({
   // baseURL: 'http://192.168.50.252/api/',
-  baseURL: 'http://wlhis.qs110.com/api/',
+  baseURL: 'http://beifan.400539.com/api/',
   // --md5加密http://gthis.qs110.com/
   transformRequest: [(data: any) => {
     return qs.stringify(md5s(Object.assign({}, data)))
@@ -38,18 +38,18 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     setLoading(false)
-    return Promise.reject(response)
-    // if (response.data.status === 1) {
-    //   return Promise.resolve(response.data)
-    // } else if (response.data.status === 0) {
-    //   Toast(response.data.message)
-    //   return Promise.reject(response)
-    // } else {
-    //   Toast(response.data.message)
-    //   Cookies.remove('x_tk')
-    //   window.location.href = 'http://webapp.wdfybj.com/wlhis/index.html'
-    //   return Promise.reject(response)
-    // }
+    // return Promise.reject(response)
+    if (response.data.status === 1) {
+      return Promise.resolve(response.data)
+    } else if (response.data.status === 0) {
+      Toast(response.data.message)
+      return Promise.reject(response)
+    } else {
+      // Toast(response.data.message)
+      // Cookies.remove('x_tk')
+      // window.location.href = 'http://webapp.wdfybj.com/wlhis/index.html'
+      return Promise.reject(response)
+    }
   },
   (error: any) => {
     setLoading(false)

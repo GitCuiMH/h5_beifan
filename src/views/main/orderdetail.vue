@@ -36,9 +36,9 @@
           <div class="alert">{{it.stauts == 0 ? '等待您的付款' : ''}}</div>
           <div v-if="it.status == 0" class="del bt">取消订单</div>
           <div v-if="it.status == 3" class="del bt">删除订单</div>
-          <div v-if="it.status == 0" class="pay bt" @click="$router.push('/suborder/' + it.id)">去支付</div>
+          <div v-if="it.status == 0" class="pay bt">去支付</div>
           <div v-if="it.status == 1" class="pay bt">确认收货</div>
-          <div v-if="it.status == 3" class="pay bt" @click="$router.push('/shouhou/' + it.id)">退款/售后</div>
+          <div v-if="it.status == 3" class="pay bt">退款/售后</div>
           <div v-if="it.status == 2" class="desc">订单已完成</div>
         </div>
       </div>
@@ -86,8 +86,7 @@ export default class MyOrder extends Vue {
     goodsname: '据说是商品',
     num: 3,
     price: '999.9',
-    status: 3,
-    id: 10
+    status: 3
   }]
   private mounted(): void {
     document.title = '我的订单'

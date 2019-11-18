@@ -3,20 +3,20 @@
     <div class="baseInfo">
       <div class="item">
         <div class="text">收货人：</div>
-        <input type="text" class="reinput" placeholder="请填写姓名" v-model="pageData.user_name"/>
+        <input type="text" class="reinput" placeholder="请填写姓名" v-model="pageData.name"/>
       </div>
       <div class="item">
         <div class="text">联系电话：</div>
-        <input type="text" class="reinput" placeholder="请填写联系电话" v-model="pageData.user_mobile"/>
+        <input type="text" class="reinput" placeholder="请填写联系电话" v-model="pageData.name"/>
       </div>
       <div class="item" @click="chooseAddr">
         <div class="text">配送地址：</div>
-        <input type="text" disabled @click="chooseAddr" class="reinput" placeholder="请选择省、市、区" v-model="addrdetail"/>
+        <input type="text" disabled @click="chooseAddr" class="reinput" placeholder="请选择省、市、区" v-model="pageData.addr"/>
         <!-- <div class="addr">{{pageData.addr}}</div> -->
       </div>
     </div>
     <div class="dtaddr">
-      <textarea class="reinput" name="" placeholder="请填写详细地址(街道、楼牌号等)" v-model="pageData.address"></textarea>
+      <textarea class="reinput" name="" placeholder="请填写详细地址(街道、楼牌号等)" v-model="pageData.addr"></textarea>
     </div>
     <div class="dtaddr2" @click="save">
       设为默认地址
@@ -31,7 +31,6 @@ import { getSelfInfo } from '@/api/hospital'
 import { Component, Vue } from 'vue-property-decorator';
 import { getURLParams } from '@/utils/auth'
 import { areaList } from '@/utils/address'
-import { editAddress, getAddressInfo } from '@/api/mainpage'
 import Cookies from 'js-cookie'
 import { State,
   namespace } from 'vuex-class'
@@ -42,42 +41,22 @@ export default class EditAddr extends Vue {
   @userModule.State('addrInfo') private addrInfo: any
   private showAddr: boolean = false
   private areaList: any = areaList
-  private addrdetail: string = ''
   private pageData: any = {
-    user_name: '',
-    user_mobile: '',
-    province: '',
-    city: '',
-    area: '',
-    address: '',
-    is_default: 0
+    name: '请选择省、市、区',
+    mobile: '',
+    addr: '',
+    default: 0
   }
   private list: any[] = []
   private mounted(): void {
-    document.title = '收货编辑'
-    if (parseInt(this.$route.params.id, 10) > 0) {
-      getAddressInfo({id: this.$route.params.id}).then((res: any) => {
-        this.pageData.province = res.datas.province
-        this.pageData.city = res.datas.city
-        this.pageData.area = res.datas.area
-        this.pageData.user_name = res.datas.user_name
-        this.pageData.user_mobile = res.datas.user_mobile
-        this.pageData.is_default = res.datas.is_default
-        this.pageData.address = res.datas.address
-        this.addrdetail = this.addrInfo.province_name + ' ' + this.addrInfo.city_name + ' ' + this.addrInfo.district_name
-      })
+    document.title = '修改资料'
+    if (this.$route.params.id) {
+      this.pageData = this.addrInfo
     }
+    console.log(this.$route.params.id, this.addrInfo);
   }
   private save() {
-    const params = {
-      id: this.$route.params.id,
-      ...this.pageData
-    }
-    console.log(params);
-    editAddress(params).then((res: any) => {
-      this.$toast(res.message)
-      this.$router.goBack()
-    })
+    this.$router.goBack()
   }
   private chooseAddr() {
     this.showAddr = true
@@ -86,10 +65,7 @@ export default class EditAddr extends Vue {
     this.showAddr = false
   }
   private confirm(e: any) {
-    this.pageData.province = e[0].code
-    this.pageData.city = e[1].code
-    this.pageData.area = e[2].code
-    this.addrdetail = Array.from(e, (i: any) => i.name).join(' ')
+    this.pageData.addr = Array.from(e, (i: any) => i.name).join(' ')
     this.onClose()
   }
 }

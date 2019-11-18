@@ -3,14 +3,14 @@
     <div class="list">
       <div class="item boxshadow" v-for="(it, idx) in list" :key="idx">
         <div class="header">
-          <div class="name">收货人: {{it.name}}</div>
-          <div class="num">{{it.mobile}}</div>
+          <div class="name">收货人: {{it.user_name}}</div>
+          <div class="num">{{it.user_mobile}}</div>
         </div>
-        <div class="reinput">{{it.addr}}</div>
+        <div class="reinput">{{it.province_name + ' ' + it.city_name + ' ' + it.district_name + ' ' + it.address}}</div>
         <!-- <input type="text" class="reinput" placeholder="此处填写详细地址信息" v-model="it.addr"/> -->
         <div class="opts">
           <div class="default" :class="{df: it.default}" @click.stop="setDefault(idx)">
-            <img v-if="it.default" src="../../assets/image/check.png" alt="" class="icon"/>
+            <img v-if="it.is_default" src="../../assets/image/check.png" alt="" class="icon"/>
             <img v-else src="../../assets/image/uncheck.png" alt="" class="icon"/>默认地址
           </div>
           <div class="edit" @click.stop="edit(idx)">
@@ -32,6 +32,7 @@ import { getSelfInfo } from '@/api/hospital'
 import { Component, Vue } from 'vue-property-decorator';
 import { getURLParams } from '@/utils/auth'
 import Cookies from 'js-cookie'
+import { getAddress, setDefault } from '@/api/mainpage'
 import { State,
   namespace } from 'vuex-class'
 const userModule = namespace('user')
@@ -40,65 +41,20 @@ const userModule = namespace('user')
 export default class Proxy extends Vue {
   @userModule.Mutation('SET_ADDRINFO') private setInfo: any
   private pageData: any = {}
-  private list: any[] = [{
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'sdfasdfasd',
-    default: 1,
-  }, {
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'asdfasdfaasss',
-    default: 0,
-  }, {
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'asdfasdfaasss',
-    default: 0,
-  }, {
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'asdfasdfaasss',
-    default: 0,
-  }, {
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'asdfasdfaasss',
-    default: 0,
-  }, {
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'asdfasdfaasss',
-    default: 0,
-  }, {
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'asdfasdfaasss',
-    default: 0,
-  }, {
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'asdfasdfaasss',
-    default: 0,
-  }, {
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'asdfasdfaasss',
-    default: 0,
-  }, {
-    name: '二兴',
-    mobile: '12343212345',
-    addr: 'asdfasdfaasss',
-    default: 0,
-  }]
+  private list: any[] = []
   private mounted(): void {
     document.title = '收货地址'
+    getAddress({}).then((res: any) => {
+      this.list = res.datas.data
+    })
   }
   private setDefault(idx: number): void {
-    this.list.forEach((it) => {
-      it.default = 0
+    setDefault({id: this.list[idx].id}).then((res: any) => {
+      this.list.forEach((it) => {
+        it.is_default = 0
+      })
+      this.list[idx].is_default = 1
     })
-    this.list[idx].default = 1
   }
   private del(idx: number): void {
     this.list.splice(idx, 1)

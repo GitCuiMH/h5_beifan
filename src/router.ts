@@ -21,7 +21,24 @@ export default new Router({
       name: 'Main',
       component: () => import('@/views/main.vue'),
     },
-
+    // 登录
+    {
+      path: '/login',
+      name: 'Login',
+      component: () => import('@/views/login/index.vue'),
+    },
+    // 忘记密码
+    {
+      path: '/forget',
+      name: 'Forget',
+      component: () => import('@/views/login/forget.vue'),
+    },
+    // 邀请
+    {
+      path: '/invite',
+      name: 'Invite',
+      component: () => import('@/views/login/invite.vue'),
+    },
     // 个人中心-我的代理
     {
       path: '/proxy',
@@ -52,6 +69,24 @@ export default new Router({
       name: 'MyOrder',
       component: () => import('@/views/self/myorder.vue'),
     },
+    // 订单-确认订单
+    {
+      path: '/suborder/:id',
+      name: 'SubOrder',
+      component: () => import('@/views/self/order.vue'),
+    },
+    // 订单-退款/售后
+    {
+      path: '/shouhou/:idx',
+      name: 'ShouHou',
+      component: () => import('@/views/self/shouhou.vue'),
+    },
+    // 订单-退款/售后-状态
+    {
+      path: '/shouhoust/:idx',
+      name: 'ShouHouSt',
+      component: () => import('@/views/self/shouhoustatus.vue'),
+    },
     // 个人中心-账单细节
     {
       path: '/zdlist',
@@ -64,17 +99,65 @@ export default new Router({
       name: 'Set',
       component: () => import('@/views/self/set.vue'),
     },
-    // 个人中心-账号设置
-    {
-      path: '/edit',
-      name: 'Edit',
-      component: () => import('@/views/self/edit.vue'),
-    },
     // 个人中心-实名认证
     {
       path: '/renzheng',
       name: 'RenZheng',
       component: () => import('@/views/self/renzheng.vue'),
+    },
+    // 个人中心-修改资料
+    {
+      path: '/edit',
+      name: 'Edit',
+      component: () => import('@/views/self/edit.vue'),
+    },
+    // 主页-新人加盟
+    {
+      path: '/mnewadd',
+      name: 'MnewAdd',
+      component: () => import('@/views/main/newadd.vue'),
+    },
+    // 主页-邀请链接
+    {
+      path: '/minviteurl',
+      name: 'MinviteUrl',
+      component: () => import('@/views/main/inviteurl.vue'),
+    },
+    // 主页-商品扫码
+    {
+      path: '/mgdcode',
+      name: 'MgdCode',
+      component: () => import('@/views/main/gdcode.vue'),
+    },
+    // 主页-审核管理
+    {
+      path: '/mmanager',
+      name: 'Mmanager',
+      component: () => import('@/views/main/manager.vue'),
+    },
+    // 主页-合伙人审核
+    {
+      path: '/mmanagerdtl/:id',
+      name: 'MmanagerDtl',
+      component: () => import('@/views/main/shenhestatus.vue'),
+    },
+    // 主页-下单
+    {
+      path: '/mxiadan',
+      name: 'MxiaDan',
+      component: () => import('@/views/main/xiadan.vue'),
+    },
+    // 主页-工厂出货
+    {
+      path: '/mchuhuo',
+      name: 'MchuHuo',
+      component: () => import('@/views/main/comchuohuo.vue'),
+    },
+    // 主页-提交成功
+    {
+      path: '/msubsuc',
+      name: 'MsubSuc',
+      component: () => import('@/views/main/subsuc.vue'),
     },
     // 门诊待缴费
     {

@@ -21,6 +21,48 @@ export const lvList = [
   }
 ]
 
+export const dateList = [{
+  text: '选择日期',
+  value: 0
+}, {
+  text: '近三天',
+  value: 1
+}, {
+  text: '近七天',
+  value: 3
+}, {
+  text: '近一月',
+  value: 2
+}, {
+  text: '近三月',
+  value: 4
+}]
+export const sexs = [{
+  text: '全部',
+  value: 0
+}, {
+  text: '男',
+  value: 1
+}, {
+  text: '女',
+  value: 2
+}]
+export const dkind = [{
+  text: '交易类型',
+  value: 0
+}, {
+  text: '提现',
+  value: 1
+}, {
+  text: '二维码收款',
+  value: 2
+}, {
+  text: '转账',
+  value: 3
+}, {
+  text: '退款',
+  value: 4
+}]
 interface ITest {
   name: string,
   age?: number,
