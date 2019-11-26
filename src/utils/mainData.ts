@@ -8,10 +8,10 @@ export const lvList = [
     lvname: '黄金合伙人'
   }, {
     id: 3,
-    lvname: '至尊合伙人'
+    lvname: '钻石合伙人'
   }, {
     id: 4,
-    lvname: '钻石合伙人'
+    lvname: '至尊合伙人'
   }, {
     id: 5,
     lvname: '候选股东'

@@ -44,10 +44,13 @@ service.interceptors.response.use(
     } else if (response.data.status === 0) {
       Toast(response.data.message)
       return Promise.reject(response)
+    } else if (response.data.status === 10) {
+      Toast(response.data.message)
+      Cookies.remove('x_tk')
+      window.location.href = 'http://beifan.400539.com/api/wechat/login/type/main'
+      return Promise.reject(response)
     } else {
-      // Toast(response.data.message)
-      // Cookies.remove('x_tk')
-      // window.location.href = 'http://webapp.wdfybj.com/wlhis/index.html'
+      Toast(response.data.message)
       return Promise.reject(response)
     }
   },

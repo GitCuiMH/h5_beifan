@@ -1,21 +1,21 @@
 <template>
   <div class="content">
-    <mains v-if="switchIndex === 0"/>
-    <order v-if="switchIndex === 1" @search="search"></order>
-    <self v-if="switchIndex === 2" :user="userInfo"/>
+    <mains v-if="tabIndex === 0"/>
+    <order v-if="tabIndex === 1" @search="search"></order>
+    <self v-if="tabIndex === 2" :user="userInfo"/>
     <div class="switchbar">
-      <div class="item" :class="{active: switchIndex === 0}" @click="switchtab(0)">
-        <img class="switchImg" v-if="switchIndex === 0" src="../assets/index/main.png" alt="">
+      <div class="item" :class="{active: tabIndex === 0}" @click="switchtab(0)">
+        <img class="switchImg" v-if="tabIndex === 0" src="../assets/index/main.png" alt="">
         <img class="switchImg" v-else src="../assets/index/maing.png" alt="">
         <div class="text">首页</div>
       </div>
-      <div class="item" :class="{active: switchIndex === 1}" @click="switchtab(1)">
-        <img class="switchImg" v-if="switchIndex === 1" src="../assets/index/order.png" alt="">
+      <div class="item" :class="{active: tabIndex === 1}" @click="switchtab(1)">
+        <img class="switchImg" v-if="tabIndex === 1" src="../assets/index/order.png" alt="">
         <img class="switchImg" v-else src="../assets/index/orderg.png" alt="">
         <div class="text">代理订单</div>
       </div>
-      <div class="item" :class="{active: switchIndex === 2}" @click="switchtab(2)">
-        <img class="switchImg" v-if="switchIndex === 2" src="../assets/index/user.png" alt="">
+      <div class="item" :class="{active: tabIndex === 2}" @click="switchtab(2)">
+        <img class="switchImg" v-if="tabIndex === 2" src="../assets/index/user.png" alt="">
         <img class="switchImg" v-else src="../assets/index/userg.png" alt="">
         <div class="text">个人中心</div>
       </div>
@@ -50,21 +50,18 @@ export default class Main extends Vue {
     yue: 1235,
     id: 1
   }
+  @userModule.State('tabIndex') private tabIndex: any;
+  @userModule.Mutation('SET_tabIndex') private toggleInfo: any
   private searchkey: string = ''
-  private switchIndex: number = 0
   private mounted(): void {
     document.title = '首页'
-    // if (Cookies.get('x_tk')) {
-    // } else if (getURLParams().x_tk) {
-    //   Cookies.set('x_tk', getURLParams().x_tk, { expires: 3.33 })
-    // } else {
-    //   window.location.href = 'http://wlhis.qs110.com/api/wechat/login/type/1'
-    //   return
-    // }
+    if (getURLParams().x_tk) {
+      Cookies.set('x_tk', getURLParams().x_tk, { expires: 3.33 })
+    }
   }
   private switchtab(type: number) {
     const title = ['首页', '代理订单', '个人中心']
-    this.switchIndex = type
+    this.toggleInfo(type)
     document.title = title[type]
   }
   private search(e: string) {

@@ -20,20 +20,20 @@
       @load="onLoad"
     >
       <div class="item boxshadow" v-for="(it, idx) in list" :key="idx">
-        <div class="name">{{it.name}} - {{lvlist[parseInt(it.lv, 10) - 1].lvname}}</div>
+        <div class="name">{{it.name}} - {{lvlist[parseInt(it.level, 10) - 1].lvname}}</div>
         <div class="detail">
           <img :src="it.avatar" alt="" class="avatar"/>
           <div class="sex" :class="{sex2: it.sex > 1}">{{it.sex > 1 ? '女' : '男'}}</div>
           <div class="wenum">
             <img src="../../assets/image/wechat.png" alt="" class="icon"/>微信号
             <div class="tt">
-              {{it.wechat}}
+              {{it.name}}
             </div>
           </div>
           <div class="wenum">
             <img src="../../assets/image/timeicon.png" alt="" class="icon"/>入职时间
             <div class="tt">
-              {{it.time}}
+              {{it.reg_time}}
             </div>
           </div>
         </div>
@@ -42,7 +42,7 @@
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { getagList } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import { getURLParams } from '@/utils/auth'
 import { lvList, sexs } from '@/utils/mainData'
@@ -58,106 +58,45 @@ export default class Proxy extends Vue {
   private page: number = 1
   private dplist: any = sexs
   private lvlist: any[] = lvList
-  private list: any[] = [{
-    name: '二兴',
-    avatar: '',
-    lv: 1,
-    sex: 1,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }, {
-    name: '二兴',
-    avatar: '',
-    lv: 3,
-    sex: 2,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }, {
-    name: '二兴',
-    avatar: '',
-    lv: 3,
-    sex: 2,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }, {
-    name: '二兴',
-    avatar: '',
-    lv: 3,
-    sex: 2,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }, {
-    name: '二兴',
-    avatar: '',
-    lv: 3,
-    sex: 2,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }, {
-    name: '二兴',
-    avatar: '',
-    lv: 3,
-    sex: 2,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }, {
-    name: '二兴',
-    avatar: '',
-    lv: 3,
-    sex: 2,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }, {
-    name: '二兴',
-    avatar: '',
-    lv: 3,
-    sex: 2,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }, {
-    name: '二兴',
-    avatar: '',
-    lv: 3,
-    sex: 2,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }, {
-    name: '二兴',
-    avatar: '',
-    lv: 3,
-    sex: 2,
-    time: '2019-02-02',
-    wechat: 'alsdjfss'
-  }]
+  private list: any[] = []
   private mounted(): void {
     document.title = '我的代理'
+    this.getData()
   }
   private search(): void {
     console.log(this.searchkey)
+    this.finished = false
+    this.page = 1
+    this.getData()
   }
   private gopage(path: string) {
   }
   private dpchange() {
     console.log(this.dpIndex);
+    this.finished = false
+    this.page = 1
+    this.getData()
   }
   private getData(p = 1) {
-    // this.loading = true
-    // getUserList({type: this.tabIndex, page: p, key: this.searchkey}).then((res: any) => {
-    //   // console.log(res);
-    //   this.loading = false
-    //   if (p > 1) {
-    //     this.datalist = this.datalist.concat(res.datas)
-    //   } else {
-    //     this.datalist = res.datas
-    //   }
-    //   if (this.datalist.length >= res.total) {
-    //     this.finished = true
-    //   }
-    // })
+    this.loading = true
+    getagList({status: 1, page: p, key: this.searchkey, sex: this.dpIndex}).then((res: any) => {
+      // console.log(res);
+      this.loading = false
+      if (p > 1) {
+        this.list = this.list.concat(res.datas.data)
+      } else {
+        this.list = res.datas.data
+      }
+      if (this.list.length >= res.total) {
+        this.finished = true
+      }
+    })
   }
   private onLoad() {
-    this.page++
-    this.getData(this.page)
+    if (this.list.length) {
+      this.page++
+      this.getData(this.page)
+    }
   }
 }
 </script>
@@ -208,7 +147,7 @@ export default class Proxy extends Vue {
           @include wh(51, 51);
           object-fit: cover;
           border-radius: 50%;
-          border: 1px solid #6FBDF1;
+          // border: 1px solid #6FBDF1;
         }
         .sex{
           @include wh(35, 21);

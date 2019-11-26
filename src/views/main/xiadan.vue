@@ -21,9 +21,9 @@
           finished-text="没有更多了"
           @load="onLoad"
         >
-          <div class="orderitem" v-for="(it, idx) in list" :key="idx">
-            <img :src="it.pic" alt="" class="pic"/>
-            <div class="text">{{it.goodsname}}</div>
+          <div class="orderitem" v-for="(it, idx) in list" :key="idx" @click="$router.push('/mgdinfo/' + it.id)">
+            <img :src="('http://beifan.400539.com' + it.thumb)" alt="" class="pic"/>
+            <div class="text">{{it.title}}</div>
           </div>
         </van-list>
       <!-- </div> -->
@@ -49,7 +49,7 @@ export default class MxiaDan extends Vue {
   }
   private list: any[] = []
   private mounted(): void {
-    document.title = '我的订单'
+    document.title = '我要下单'
     getCate({}).then((res: any) => {
       this.tabDatas = res.datas
       this.tabChange(0)
@@ -60,6 +60,9 @@ export default class MxiaDan extends Vue {
   }
   private search(): void {
     console.log(this.searchkey)
+    this.finished = false
+    this.page = 1
+    this.getData()
   }
   private toggleTab(idx: number): void {
     this.tabIdx = idx
@@ -67,12 +70,12 @@ export default class MxiaDan extends Vue {
   private getData(p = 1) {
     this.loading = true
     console.log(this.tabDatas[this.tabIdx].child[this.activeKey].id);
-    getGdList({key: this.searchkey, id: this.tabDatas[this.tabIdx].child[this.activeKey].id, page: p}).then((res: any) => {
+    getGdList({key: this.searchkey, catid: this.tabDatas[this.tabIdx].child[this.activeKey].id, page: p}).then((res: any) => {
       this.loading = false
       if (p > 1) {
-        this.list = this.list.concat(res.datas)
+        this.list = this.list.concat(res.datas.data)
       } else {
-        this.list = res.datas
+        this.list = res.datas.data
       }
       if (this.list.length >= res.total) {
         this.finished = true
@@ -80,14 +83,13 @@ export default class MxiaDan extends Vue {
     })
   }
   private onLoad() {
-    // if (this.list.length) {
-    //   this.page++
-    //   this.getData(this.page)
-    // }
+    if (this.list.length) {
+      this.page++
+      this.getData(this.page)
+    }
   }
   private tabChange(idx: number) {
     this.page = 1
-    // this.activeKey = idx
     this.getData(1)
   }
 }
@@ -144,6 +146,7 @@ export default class MxiaDan extends Vue {
   .list{
     background: white;
     height: 100%;
+    width: 100%;
     overflow: scroll;
     padding: pm(10) 0 pm(30) 0;
     color: #434343;
@@ -155,7 +158,6 @@ export default class MxiaDan extends Vue {
       .pic{
         @include wh(100, 70);
         margin-left: pm(15);
-        border: 1px solid red;
       }
       .text{
         text-align: center;
@@ -196,7 +198,8 @@ export default class MxiaDan extends Vue {
   color: $m;
 }
 .van-list__error-text, .van-list__finished-text, .van-list__loading {
-  float: left;
+  // float: left;
+  clear: both !important;
   width: 100%;
 }
 </style>

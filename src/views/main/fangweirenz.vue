@@ -1,51 +1,54 @@
 <template>
   <div class="containers">
-    <div class="header">
-      <div class="item2" :class="{active:tabIdx === 0}" @click="toggleTab(0)">登录密码修改</div>
-      <div class="item2" :class="{active:tabIdx === 1}" @click="toggleTab(1)">交易密码修改</div>
+    <div class="item" @click="$router.push('/set')">
+      <div class="text">防伪认证信息</div>
+      <div class="forpos"></div>
+      <div class="text2">{{gdindtl.fw_xx}}</div>
     </div>
-    <div class="item dtaddr2">
-      <div class="text">输入登录账号：</div>
-      <input type="text" class="reinput" placeholder="" v-model="pageData.name"/>
+    <div class="item" @click="alerts(1)">
+      <div class="text">企业名称</div>
+      <div class="forpos"></div>
+      <div class="text2">{{gdindtl.fw_qy}}</div>
     </div>
-    <div class="desc">请输入手机 138*****2573 收到的短信验证码</div>
-    <div class="item dtaddr2">
-      <div class="text">输入校验码：</div>
-      <input type="text" class="reinput reinput2" placeholder="" v-model="pageData.name"/>
-      <div class="getcode">获取验证码</div>
+    <div class="item" @click="alerts(2)">
+      <div class="text">营业执照号码：</div>
+      <div class="forpos"></div>
+      <div class="text2">{{gdindtl.fw_yy}}</div>
     </div>
-    <div class="baseInfo">
-      <div class="item">
-        <div class="text">修改{{tabIdx ? '交易' : '登录'}}账号：</div>
-        <input type="text" class="reinput" placeholder="" v-model="pageData.name"/>
-      </div>
-      <div class="item">
-        <div class="text">确定{{tabIdx ? '交易' : '登录'}}账号：</div>
-        <input type="text" class="reinput" placeholder="" v-model="pageData.name"/>
-      </div>
+    <div class="item" @click="alerts(2)">
+      <div class="text">企业地址：</div>
+      <div class="forpos"></div>
+      <div class="text2">{{gdindtl.fw_addr}}</div>
     </div>
-    <div class="addbtn">确定</div>
+    <!-- <div class="addbtn" @click="share">分享给好友</div> -->
+    <div v-if="layer > 0" class="layer" @click="layerclose">
+      <div class="layercontent"></div>
+    </div>
   </div>
 </template>
 <script lang="ts">
 import { getSelfInfo } from '@/api/hospital'
 import { Component, Vue } from 'vue-property-decorator';
 import Cookies from 'js-cookie'
+import { State,
+  namespace } from 'vuex-class'
+const userModule = namespace('user')
 @Component({
 })
-export default class Set extends Vue {
-  private tabIdx: number = 0
-  private pageData: any = {
-  }
-  private list: any[] = []
+export default class Setting extends Vue {
+  @userModule.State('gdindtl') private gdindtl: any
+  private layer: number = 0;
   private mounted(): void {
-    document.title = '账号设置'
+    document.title = '防伪认证'
   }
   private save() {
     this.$router.goBack()
   }
-  private toggleTab(idx: number): void {
-    this.tabIdx = idx
+  private share() {
+    this.layer = 1
+  }
+  private layerclose() {
+    this.layer = 0;
   }
 }
 </script>
@@ -56,93 +59,33 @@ export default class Set extends Vue {
   background: #F3F3F3;
   color: #333333;
   font-size: pm(13);
-  .header{
-    display: flex;
-    color: #434343;
-    font-size: pm(13);
-    border-radius: 0;
-    background: white;
-    height: pm(47);
-    justify-content: space-around;
-    padding: 0 pm(40);
-    .item2{
-      align-self: center;
-      text-align: center !important;
-    }
-    .active {
-      position: relative;
-      color: #242424;
-      font-size: pm(16);
-      &::after {
-        position: absolute;
-        left: 50%;
-        bottom: -5px;
-        content: "";
-        width: pm(47);
-        height: pm(2);
-        margin-left: pm(-23);
-        border-radius: 1px;
-        background: $m;
-      }
-    }
-  }
-  .baseInfo{
-    height: pm(89);
-    background: white;
-    border-radius: pm(15);
-    margin: pm(11) pm(10);
-    padding: 0 pm(16);
-    display: flex;
-    flex-direction: column;
-    .item{
-      +.item{
-        border-top: 1px solid #DEDEDE;
-      }
-    }
-  }
   .item{
-    flex: 1;
+    margin: pm(16) pm(10) 0 pm(10);
+    // height: pm(44);
     display: flex;
-    font-size: pm(15);
-    // padding: 0 pm(12);
+    background:rgba(255,255,255,1);
+    box-shadow:0px 2px 10px 0px rgba(174,185,190,0.7);
+    border-radius: pm(10);
+    color: #333333;
+    padding: 0 pm(10) 0 pm(17);
+    justify-content: space-between;
+    font-size: pm(13);
     >*{
       align-self: center;
     }
-    .text{
-      color: #2F2F2F;
-    }
-    .reinput, .addr{
-      flex: 1;
-    }
-    .reinput2{
-      text-align: left;
-      width: 110px;
+    .text2{
+      width: pm(220);
+      padding: pm(10) 0;
+      text-align: right;
     }
   }
-  .dtaddr2{
-    background: white;
-    margin: pm(10) pm(10);
-    padding: pm(14) pm(13) pm(14) pm(16);
-    border-radius: pm(10);
-    font-size: pm(15);
-    .getcode{
-      width: pm(92);
-      color: $m;
-      font-size: pm(13);
-      text-align: center;
-      // height: ;
-      border-left: 1px solid #DEDEDE;
-    }
-  }
-  .desc{
-    color: #666666;
-    font-size: pm(12);
-    margin: pm(6) pm(16);
-  }
-  .addbtn{
-    position: absolute;
-    bottom: pm(65);
-  }
+}
+.addbtn{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 0;
 }
 </style>
 

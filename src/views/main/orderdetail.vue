@@ -9,7 +9,7 @@
       <div class="item" :class="{active:tabIdx === 1}" @click="toggleTab(1)">待付款</div>
       <div class="item" :class="{active:tabIdx === 2}" @click="toggleTab(2)">待收货</div>
       <div class="item" :class="{active:tabIdx === 3}" @click="toggleTab(3)">已完成</div>
-      <div class="item" :class="{active:tabIdx === 4}" @click="toggleTab(4)">退款/售后</div>
+      <div class="item" :class="{active:tabIdx === 4}" @click="toggleTab(4)">退货/售后</div>
     </div>
     <van-list
       class="list"
@@ -38,7 +38,7 @@
           <div v-if="it.status == 3" class="del bt">删除订单</div>
           <div v-if="it.status == 0" class="pay bt">去支付</div>
           <div v-if="it.status == 1" class="pay bt">确认收货</div>
-          <div v-if="it.status == 3" class="pay bt">退款/售后</div>
+          <div v-if="it.status == 3" class="pay bt">退货/售后</div>
           <div v-if="it.status == 2" class="desc">订单已完成</div>
         </div>
       </div>
@@ -59,35 +59,7 @@ export default class MyOrder extends Vue {
   private page: number = 1
   private pageData: any = {
   }
-  private list: any[] = [{
-    time: '2019-10-11 13:44:55',
-    pic: '',
-    goodsname: '据说是商品',
-    num: 3,
-    price: '999.9',
-    status: 0
-  }, {
-    time: '2019-10-11 13:44:55',
-    pic: '',
-    goodsname: '据说是商品',
-    num: 3,
-    price: '999.9',
-    status: 1
-  }, {
-    time: '2019-10-11 13:44:55',
-    pic: '',
-    goodsname: '据说是商品',
-    num: 3,
-    price: '999.9',
-    status: 2
-  }, {
-    time: '2019-10-11 13:44:55',
-    pic: '',
-    goodsname: '据说是商品',
-    num: 3,
-    price: '999.9',
-    status: 3
-  }]
+  private list: any[] = []
   private mounted(): void {
     document.title = '我的订单'
     this.tabIdx = parseInt(this.$route.params.idx, 10)
@@ -96,7 +68,9 @@ export default class MyOrder extends Vue {
     this.$router.goBack()
   }
   private search(): void {
-    console.log(this.searchkey)
+    this.finished = false
+    this.page = 1
+    this.getData()
   }
   private toggleTab(idx: number): void {
     this.tabIdx = idx

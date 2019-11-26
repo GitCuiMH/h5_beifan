@@ -1,17 +1,19 @@
 <template>
   <transition name="fade">
     <div v-if="show" class="msgbox" @click="confirm === '查看解析' ? closeBack() : closeLayer()">
-      <div :class="{anima:anim.enter,leave:anim.leave}" class="modal fade dialog-modal" role="dialog" data-backdrop="false" aria-hidden="true">
+      <div :class="{anima:anim.enter,leave:anim.leave}" class="modal fade dialog-modal" role="dialog" data-backdrop="false" aria-hidden="true" @click.stop="">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header row">
               <div class="modal-title col-md-4">提示</div>
-              <div class="close" aria-label="Close" @click="close">
+              <div class="close" aria-label="Close">
                 <span aria-hidden="true">×</span>
               </div>
             </div>
             <div class="modal-body">
-              <div class="col-xs-offset-1">{{ message }}</div>
+              <!-- <div class="col-xs-offset-1">请填写您的联系方式</div> -->
+              <input type="text" placeholder="请输入密码" class="reinput" v-model.trim="name">
+              <!-- <input type="text" placeholder="请输入手机号码" class="reinput" v-model.trim="text"> -->
             </div>
             <div class="modal-footer" @click.stop>
               <div class="btn btn-gray" @click="closeLayer">{{ cancelText }}</div>
@@ -33,6 +35,8 @@ export default {
       confirm: '确定',
       cancelText: '取消',
       show: false,
+      text: '',
+      name: '',
       anim: {
         enter: true,
         leave: false
@@ -58,8 +62,11 @@ export default {
       }, 300)
     },
     close() {
+      if (!this.name) {
+        return
+      }
       const self = this
-      this.conf('back info')
+      this.conf(this.name)
       this.anim.enter = false
       this.anim.leave = true
       setTimeout(() => {
@@ -71,6 +78,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@function pm($pt) {
+  @return $pt / 37.5 + rem
+};
 .msgbox{
   position: absolute;
   left: 0;
@@ -85,7 +95,7 @@ export default {
     position: relative;
     width: 7rem;
     top: 0rem;
-    height: 5.2rem;
+    // height: 5.5rem;
     margin: 1.5rem;
     z-index: 200;
     background: white;
@@ -94,7 +104,7 @@ export default {
     text-align: center;
     border-radius: 0.2rem;
     &-content{
-      height: 5.2rem;
+      // height: 5.2rem;
       display: flex;
       flex-direction: column;
     }
@@ -114,9 +124,9 @@ export default {
       height: 0.6rem;
     }
     &-body{
-      flex: 1;
+      // flex: 1;
       // align-self: center;
-      display: flex;
+      // display: flex;
       padding: 0 0.3rem;
       font-size: 0.45rem;
       color: #2F2F2F;
@@ -129,10 +139,10 @@ export default {
     &-footer{
       // position: absolute;
       // bottom: 0;
-      border-top: 1px solid #CECECE;
+      border-top: 1px solid #D8D8D8;
       height: 1.3rem;
       width: 100%;
-      background: rgba(244, 176, 62, 1);
+      background: #CD0000;
       text-align: center;
       line-height: 1.3rem;
       font-size: 0.45rem;
@@ -141,6 +151,7 @@ export default {
       // justify-content: space-around;
       >div{
         width: 50%;
+        height: 1.3rem;
       }
       .btn-gray{
         background: white;
@@ -150,4 +161,12 @@ export default {
   }
 }
 
+.reinput{
+  margin: pm(3) auto pm(12);
+  background: rgba(52, 63, 101, .1);
+  border-radius: pm(6);
+  width: pm(215);
+  height: pm(42);
+  padding-left: pm(14);
+}
 </style>

@@ -6,7 +6,7 @@
     <div class="conbox">
       <div class="inputblock">
         <img src="../../assets/image/mobile.png" alt="" class="icon"/>
-        <input type="text" placeholder="手机号" class="reinput"/>
+        <input type="text" v-model.trim="p.mobile" placeholder="手机号" class="reinput"/>
       </div>
       <div v-if="forget" class="inputblock">
         <img src="../../assets/image/checkcode.png" alt="" class="icon2"/>
@@ -14,38 +14,45 @@
       </div>
       <div v-if="!forget" class="inputblock">
         <img src="../../assets/image/lock.png" alt="" class="icon"/>
-        <input type="text" placeholder="密码" class="reinput"/>
+        <input type="text" v-model.trim="p.password" placeholder="密码" class="reinput"/>
       </div>
       <div v-if="forget" class="opts">
         <div class="forpos"></div>
         <div class="getcode">获取验证码</div>
+      </div>
+      <div v-if="forget" class="inputblock">
+        <input type="text" placeholder="修改登录密码" class="reinput"/>
+      </div>
+      <div v-if="forget" class="inputblock">
+        <input type="text" placeholder="确认登录密码" class="reinput"/>
       </div>
       <!-- <div class="inputblock">
         <img src="../../assets/image/king.png" alt="" class="icon"/>
         <input type="text" placeholder="级别" class="reinput"/>
       </div> -->
       <div v-if="!forget" class="opts">
-        <div class="ii">后台注册</div>
+        <div class="ii"></div>
+        <!-- <div class="ii">后台注册</div> -->
         <div class="ii" @click="forgetPw">忘记/修改密码</div>
       </div>
     </div>
     <div class="optbet">
-      <div class="addbtn">登录</div>
-      <!-- <div class="addbtn wechat">
+      <div class="addbtn" @click="login">登录</div>
+      <div class="addbtn wechat" @click="weLogin">
         <div class="ttt">
           <img src="../../assets/sao/wechat.png" alt=""/>
           <span>微信登录</span>
         </div>
-      </div> -->
+      </div>
     </div>
-    <div class="header">
+    <!-- <div class="header">
       <div class="item2" :class="{active:tabIdx === 0}" @click="toggleTab(0)">登录</div>
       <div class="item2" :class="{active:tabIdx === 1}" @click="$router.push('/forget')">推荐注册</div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { login } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import { getURLParams } from '@/utils/auth'
 import { lvList, sexs } from '@/utils/mainData'
@@ -55,13 +62,33 @@ import Cookies from 'js-cookie'
 export default class Login extends Vue {
   private forget: boolean = false
   private tabIdx: number = 0
-  private pageData: any = {}
+  private p: any = {
+    password: '',
+    mobile: ''
+  }
   private mounted(): void {
     document.title = '账号管理'
+    if (getURLParams().err) {
+      this.$toast(getURLParams().err)
+    }
   }
   private forgetPw(): void {
     this.forget = true
     document.title = '忘记/修改密码'
+  }
+  private login() {
+    login(this.p).then((res: any) => {
+      Cookies.set('x_tk', res.datas.token, { expires: 3.33 })
+      if (res.datas.is_bd <= 0) {
+        window.location.href = 'http://beifan.400539.com/api/wechat/wxBd/token/' + res.datas.token
+      } else {
+        this.$router.replace('/')
+      }
+    })
+  }
+  private weLogin() {
+    Cookies.set('x_tk', 'res.datas.token', { expires: 3.33 })
+    window.location.href = 'http://beifan.400539.com/api/wechat/login/type/main'
   }
   private gopage(path: string) {
   }

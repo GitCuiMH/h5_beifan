@@ -1,273 +1,278 @@
 <template>
   <div class="containers">
-    <div class="search">
-      <img src="../../assets/index/searchIcon.png" alt="">
-      <input class="reinput" type="text" placeholder="点击输入内容" v-model.trim="searchkey" @keyup.enter="search">
-    </div>
-    <div class="tabbar">
-      <div class="item" :class="{active:tabIdx === 0}" @click="toggleTab(0)">全部</div>
-      <div class="item" :class="{active:tabIdx === 1}" @click="toggleTab(1)">待付款</div>
-      <div class="item" :class="{active:tabIdx === 2}" @click="toggleTab(2)">待收货</div>
-      <div class="item" :class="{active:tabIdx === 3}" @click="toggleTab(3)">已完成</div>
-      <div class="item" :class="{active:tabIdx === 4}" @click="toggleTab(4)">退款/售后</div>
-    </div>
-    <van-list
-      class="list"
-      v-model="loading"
-      :finished="finished"
-      finished-text="没有更多了"
-      @load="onLoad"
-    >
-      <div class="orderitem boxshadow" v-for="(it, idx) in list" :key="idx">
-        <div class="tt">
-          <img src="../../assets/image/timeg.png" alt="" class="icon"/>
-          <span class="date">{{it.time.substring(0, 10)}}</span>
-          <span>{{it.time.substring(11, 16)}}</span>
-        </div>
-        <div class="infos">
-          <img :src="it.pic" alt=""/>
-          <div class="info">
-            <span class="title">{{it.goodsname}}</span>
-            <span class="num">数量：{{it.num}}</span>
-          </div>
-          <div class="price">实付：<span>￥{{it.price}}</span></div>
-        </div>
-        <div class="btns">
-          <div class="alert">{{it.stauts == 0 ? '等待您的付款' : ''}}</div>
-          <div v-if="it.status == 0" class="del bt">取消订单</div>
-          <div v-if="it.status == 3" class="del bt">删除订单</div>
-          <div v-if="it.status == 0" class="pay bt">去支付</div>
-          <div v-if="it.status == 1" class="pay bt">确认收货</div>
-          <div v-if="it.status == 3" class="pay bt">退款/售后</div>
-          <div v-if="it.status == 2" class="desc">订单已完成</div>
-        </div>
+    <van-swipe class="swiper" :autoplay="3000" indicator-color="white">
+      <van-swipe-item v-for="(it, idx) in p.pics" :key="idx">
+        <img :src="'http://beifan.400539.com' + it" alt="" class="pic">
+      </van-swipe-item>
+    </van-swipe>
+    <div class="infos">
+      <div class="title">{{p.title}}</div>
+      <div class="price">￥{{p.price}}</div>
+      <div class="kucun">库存:{{p.kc}}件</div>
+      <div class="desc">
+        <img src="../../assets/image/shitidian.png" alt="" class="icon">
+        <span>正品保障</span>
       </div>
-    </van-list>
+      <!-- <div class="shareblock" @click="share">
+        <img src="../../assets/image/share.png" alt="" class="icon">
+        <span>分享</span>
+      </div> -->
+    </div>
+    <div class="gddetail">
+      <div class="ttl">
+        <div class="tl" :class="{sel: tabIndex === 0}" @click="tabIndex = 0">商品详情</div>
+        <!-- <div class="tl" :class="{sel: tabIndex === 1}" @click="tabIndex = 1">产品规格</div> -->
+      </div>
+      <div class="conhtml" v-html="tabIndex ? p.content : p.specs"></div>
+    </div>
+    <!-- <div class="fixb">
+      <div class="forpos"></div>
+      <div class="btn" @click="show = true">立即购买</div>
+    </div> -->
+    <div v-if="layer > 0" class="layer" @click="layerclose">
+      <div class="layercontent"></div>
+    </div>
+    <van-popup
+      v-model="show"
+      round
+      position="bottom"
+      :style="{ maxHeight: '80%' }"
+    >
+      <div class="gdinfos">
+        <div class="gddtl">
+          <img :src="'http://beifan.400539.com' + sel.pic" alt="" class="skpic">
+          <div class="dtl">
+            <div class="price">{{sel.kc}}</div>
+            <div class="kucun">{{sel.kc}}</div>
+            <div class="name">{{sel.name}}</div>
+          </div>
+        </div>
+        <div class="skulist">
+          <div class="tt">颜色分类</div>
+          <div class="item" :class="{sel: skuIndex === idx}" v-for="(it, idx) in p.tc" :key="idx" @click="selSku(idx)">
+            {{it.name}}
+          </div>
+        </div>
+        <!-- <div class="gobuy" @click="gobuy">立即购买</div> -->
+      </div>
+    </van-popup>
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { getGdInfo } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import Cookies from 'js-cookie'
+import { dateList, dkind } from '@/utils/mainData'
+import { Mutation,
+  namespace } from 'vuex-class'
+const userModule = namespace('user')
 @Component({
 })
-export default class MyOrder extends Vue {
-  private searchkey: string = ''
-  private tabIdx: number = 0
-  private loading: boolean = false
-  private finished: boolean = false
-  private page: number = 1
-  private pageData: any = {
-  }
-  private list: any[] = [{
-    time: '2019-10-11 13:44:55',
-    pic: '',
-    goodsname: '据说是商品',
-    num: 3,
-    price: '999.9',
-    status: 0
-  }, {
-    time: '2019-10-11 13:44:55',
-    pic: '',
-    goodsname: '据说是商品',
-    num: 3,
-    price: '999.9',
-    status: 1
-  }, {
-    time: '2019-10-11 13:44:55',
-    pic: '',
-    goodsname: '据说是商品',
-    num: 3,
-    price: '999.9',
-    status: 2
-  }, {
-    time: '2019-10-11 13:44:55',
-    pic: '',
-    goodsname: '据说是商品',
-    num: 3,
-    price: '999.9',
-    status: 3
-  }]
+export default class MgdInfo extends Vue {
+  @userModule.Mutation('TOGGLE_DOCINFO') private setSku: any
+  private p: any = {}
+  private sel: any = {}
+  private show: boolean = false
+  private tabIndex: number = 0
+  private skuIndex: number = 0
+  private layer: number = 0;
   private mounted(): void {
-    document.title = '我的订单'
-    this.tabIdx = parseInt(this.$route.params.idx, 10)
+    document.title = '产品信息'
+    this.getData(parseInt(this.$route.params.id, 10))
   }
-  private save() {
-    this.$router.goBack()
+  private getData(id: number) {
+    getGdInfo({id}).then((res: any) => {
+      this.p = res.datas
+      this.sel = this.p.tc[0]
+    })
   }
-  private search(): void {
-    console.log(this.searchkey)
+  private share() {
+    this.layer = 1
   }
-  private toggleTab(idx: number): void {
-    this.tabIdx = idx
+  private layerclose() {
+    this.layer = 0;
   }
-  private getData(p = 1) {
-    // this.loading = true
-    // getUserList({type: this.tabIndex, page: p, key: this.searchkey}).then((res: any) => {
-    //   // console.log(res);
-    //   this.loading = false
-    //   if (p > 1) {
-    //     this.datalist = this.datalist.concat(res.datas)
-    //   } else {
-    //     this.datalist = res.datas
-    //   }
-    //   if (this.datalist.length >= res.total) {
-    //     this.finished = true
-    //   }
-    // })
+  private selSku(idx: number) {
+    this.skuIndex = idx
+    this.sel = this.p.tc[idx]
   }
-  private onLoad() {
-    this.page++
-    this.getData(this.page)
+  private gobuy() {
+    this.setSku(this.sel)
+    this.$router.push('/suborder/' + this.$route.params.id)
   }
 }
 </script>
 <style lang="scss" scoped>
 @import "~@/styles/utils.scss";
+.gdinfos{
+  padding: pm(24) pm(10);
+  .gobuy{
+    margin: pm(20) auto pm(15) auto;
+    @include wh(205, 40);
+    text-align: center;
+    line-height: pm(40);
+    background: #FF3657;
+    border-radius: pm(20);
+    color: white;
+    font-size: pm(16);
+  }
+  .gddtl{
+    display: flex;
+    >*{
+      align-self: center;
+    }
+    .skpic{
+      @include wh(101, 101);
+      border-radius: pm(5);
+    }
+    .dtl{
+      .pirce{
+        color: #FF3657;
+        font-size: pm(18);
+      }
+      .kucun{
+        color: #8F8F8F;
+        font-size: pm(10);
+      }
+      .name{
+        color: #2C2C2C;
+        font-size: pm(11);
+      }
+    }
+  }
+  .skulist{
+    margin-top: pm(22);
+    border-top: 1px solid #F1F1F1;
+    border-bottom: 1px solid #F1F1F1;
+    color: #2C2C2C;
+    font-size: pm(12);
+    .tt{
+      margin: pm(14) 0;
+    }
+    .item{
+      @include wh(286, 25);
+      background: #EEEEEE;
+      margin-bottom: pm(9);
+      padding-left: pm(13);
+      line-height: pm(25);
+      border-radius: pm(5);
+    }
+    .sel{
+      background: #FFEBEE;
+      border-radius: 1px solid #FF3657;
+    }
+  }
+}
+.fixb{
+  position: fixed;
+  background: white;
+  border-top: 1px solid #F1F1F1;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: pm(45);
+  display: flex;
+  .btn{
+    color: white;
+    background: #FF3657;
+    width: pm(102);
+    text-align: center;
+    line-height: pm(45);
+    font-size: pm(16);
+  }
+}
+.infos{
+  position: relative;
+  background: white;
+  padding: pm(14) pm(14) 0 pm(14);
+  .shareblock{
+    position: absolute;
+    top: pm(50);
+    right: 0;
+    z-index: 10;
+    @include wh(67, 25);
+    border-radius: pm(12) 0 0 pm(12);
+    background: #D7D7D7;
+    color: #6A6A6A;
+    font-size: pm(14);
+    display: flex;
+    >*{
+      align-self: center;
+    }
+    .icon{
+      margin: 0 pm(5) 0 pm(11);
+      @include wh(14, 14);
+    }
+  }
+  .title{
+    color: #323232;
+    font-size: pm(18);
+  }
+  .price{
+    font-size: pm(18);
+    color: #FF3657;
+    line-height: pm(41);
+    border-bottom: 1px solid #F3F3F3;
+  }
+  .kucun{
+    color: #888888;
+    font-size: pm(13);
+    line-height: pm(41);
+    border-bottom: 1px solid #F3F3F3;
+  }
+  .desc{
+    display: flex;
+    color: #888888;
+    height: pm(41);
+    font-size: pm(13);
+    >*{
+      align-self: center;
+    }
+    .icon{
+      @include wh(12, 15);
+      margin-right: pm(5);
+    }
+  }
+}
+.gddetail{
+  margin: pm(10) 0 pm(60) 0;
+  background: white;
+  .ttl{
+    color: #323232;
+    border-top: 1px solid #F1F1F1;
+    border-bottom: 1px solid #F1F1F1;
+    height: pm(45);
+    line-height: pm(45);
+    text-align: center;
+    font-size: pm(16);
+    display: flex;
+    .tl{
+      flex: 1;
+      +.tl{
+        border-left: 1px solid #F1F1F1;
+      }
+    }
+  }
+  
+  .sel{
+    color: #FF3657;
+  }
+}
 .containers{
   height: 100%;
-  // overflow: scroll;
-  display: flex;
+  overflow: scroll;
   flex-direction: column;
   background: #EEEEEE;
-  .tabbar{
-    display: flex;
-    color: #434343;
-    font-size: pm(13);
-    border-radius: 0;
-    background: white;
-    margin-top: pm(9);
-    height: pm(31);
-    padding: 0 pm(10);
-    .item{
-      align-self: center;
-      text-align: left;
-      margin-right: .586667rem;
-      // width: pm(66);
-    }
-    .active {
-      position: relative;
-      // color: #003741;
-      // font-weight: 700;
-      &::after {
-        position: absolute;
-        left: 50%;
-        bottom: -5px;
-        content: "";
-        width: pm(32);
-        height: pm(2);
-        margin-left: -0.426667rem;
-        border-radius: 1px;
-        background: $m;
-      }
-    }
+  .swiper{
+    height: pm(355);
+    width: 100%;
   }
-  .list{
-    flex: 1;
-    overflow: scroll;
-    padding: pm(10) 0 pm(30) 0;
-    color: #434343;
-    font-size: pm(12);
-    .orderitem{
-      padding-bottom: pm(10);
-      background: white;
-      margin: pm(11) pm(10) 0 pm(10);
-      >div{
-        display: flex;
-        padding: 0 pm(14) 0 pm(19);
-        >*{
-          align-self: center;
-        }
-      }
-      .tt{
-        border-bottom: 1px solid #DEDEDE;
-        height: pm(31);
-        .icon{
-          @include wh(13, 13);
-          margin-right: pm(6);
-        }
-        .date{
-          flex: 1;
-        }
-      }
-      .infos{
-        height: pm(89);
-        img{
-          @include wh(73, 67);
-          object-fit: cover;
-          border-radius: pm(5);
-          border: 1px solid red;
-          margin-right: pm(9);
-        }
-        .info{
-          flex: 1;
-          height: 1.786667rem;
-          display: flex;
-          flex-direction: column;
-          .title{
-            flex: 1;
-            color: #434343;
-            font-size: pm(14);
-          }
-          .num{
-
-          }
-        }
-        .price{
-          font-size: .346667rem;
-          span{
-            color: red;
-          }
-        }
-      }
-      .btns{
-        font-size: pm(12);
-        // margin-bottom: pm(10);
-        .alert{
-          flex: 1;
-          color: $m;
-        }
-        .bt{
-          @include wh(70, 30);
-          margin-left: .346667rem;
-          color: white;
-          line-height: .8rem;
-          border-radius: pm(15);
-          text-align: center;
-        }
-        .del{
-          background: #434343;
-        }
-        .pay{
-          background: $m;
-        }
-        .desc{
-
-        }
-      }
-    }
+  .pic{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
-.search{
-  width: 9.333333rem;
-  height: .853333rem;
-  margin: pm(9) auto 0 auto;
-  display: flex;
-  border-radius: .426667rem;
-  background: white;
-  > * {
-    align-self: center;
-  }
-  img{
-    margin: 0 pm(6.5) 0 .426667rem;
-    width: .4rem;
-    height: .426667rem;
-  }
-  input{
-    flex: 1;
-    color: black;
-    font-size: pm(13);
-  }
-}
+
 </style>
 

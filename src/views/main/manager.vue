@@ -1,25 +1,25 @@
 <template>
   <div class="conbox">
     <div class="uinfos">
-      <img src="" alt="" class="avatar"/>
+      <img :src="userInfo.avatar" alt="" class="avatar"/>
       <div class="ginfos">
-        <div class="name">二兴</div>
+        <div class="name">{{userInfo.name ? userInfo.name : userInfo.nickname}}</div>
         <div class="infos">
           <div class="item">
             <img src="../../assets/sao/zs.png" alt="" class="icon">
-            <span>城市合伙人</span>
+            <span>{{lvList[parseInt(userInfo.level, 10) -1].lvname}}</span>
           </div>
           <div class="item">
             <img src="../../assets/sao/wechat.png" alt="" class="icon">
-            <span>forskan</span>
+            <span>{{userInfo.nickname}}</span>
           </div>
         </div>
       </div>
     </div>
     <div class="tabbar">
-      <div class="item" :class="{active:tabIdx === 0}" @click="toggleTab(0)">全部</div>
-      <div class="item" :class="{active:tabIdx === 1}" @click="toggleTab(1)">待处理</div>
-      <div class="item" :class="{active:tabIdx === 2}" @click="toggleTab(2)">已处理</div>
+      <div class="item" :class="{active:tabIdx === 9}" @click="toggleTab(9)">全部</div>
+      <div class="item" :class="{active:tabIdx === 0}" @click="toggleTab(0)">待处理</div>
+      <div class="item" :class="{active:tabIdx === 1}" @click="toggleTab(1)">已处理</div>
       <div class="item" style="flex: 1"></div>
       <div class="item2">
         <img src="../../assets/image/catlogo.png" alt="" class="icon">
@@ -35,7 +35,8 @@
       finished-text="没有更多了"
       @load="onLoad"
     >
-      <div class="orderitem boxshadow" v-for="(it, idx) in list" :key="idx" @click="$router.push('/mmanagerdtl/1')">
+      <div class="orderitem boxshadow" v-for="(it, idx) in list" :key="idx">
+      <!-- <div class="orderitem boxshadow" v-for="(it, idx) in list" :key="idx" @click="$router.push('/mmanagerdtl/1')"> -->
         <div class="detail">
           <div class="name">{{it.name + '-' + lvList[parseInt(it.level, 10) - 1].lvname}}</div>
           <div class="desc">
@@ -54,60 +55,54 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { dateList, lvList } from '@/utils/mainData'
-import { getList } from '@/api/mainpage'
+import { getagList, getUserInfo } from '@/api/mainpage'
 @Component({
 })
 export default class Mmanager extends Vue {
-  private tabIdx: number = 0
+  private tabIdx: number = 9
   private loading: boolean = false
   private finished: boolean = false
   private page: number = 1
   private dpIndex: number = 0
   private dplist: any = dateList
   private lvList: any = lvList
-  private list: any[] = [
-    {
-      name: '大阿斯顿发',
-      level: 2,
-      desc: '直属代理',
-      status: 1,
-      time: '2019-01-01'
-    },
-    {
-      name: '大阿斯顿发',
-      level: 1,
-      desc: '直属代理',
-      status: 0,
-      time: '2019-01-01'
-    }
-  ]
+  private userInfo: any = {
+    level: 1
+  }
+  private list: any[] = []
   private mounted() {
     this.getData()
     document.title = '审核管理'
+    getUserInfo({}).then((res: any) => {
+      this.userInfo = res.datas
+    })
   }
   private toggleTab(idx: number): void {
     this.tabIdx = idx
+    this.finished = false
+    this.page = 1
+    this.getData()
   }
   private getData(p = 1) {
     this.loading = true
-    // getList({status: 0, page: p}).then((res: any) => {
-    //   // console.log(res);
-    //   this.loading = false
-    //   if (p > 1) {
-    //     this.list = this.list.concat(res.datas.data)
-    //   } else {
-    //     this.list = res.datas.data
-    //   }
-    //   if (this.list.length >= res.datas.total) {
-    //     this.finished = true
-    //   }
-    // })
+    getagList({status: this.tabIdx, page: p}).then((res: any) => {
+      // console.log(res);
+      this.loading = false
+      if (p > 1) {
+        this.list = this.list.concat(res.datas.data)
+      } else {
+        this.list = res.datas.data
+      }
+      if (this.list.length >= res.datas.total) {
+        this.finished = true
+      }
+    })
   }
   private onLoad() {
-    // if (this.list.length) {
-    //   this.page++
-    //   this.getData(this.page)
-    // }
+    if (this.list.length) {
+      this.page++
+      this.getData(this.page)
+    }
   }
   private dpchange() {
 

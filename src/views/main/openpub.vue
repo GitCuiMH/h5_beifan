@@ -1,126 +1,93 @@
 <template>
   <div class="containers">
-    <div class="baseInfo">
-      <div class="item">
-        <div class="text">收货人：</div>
-        <input type="text" class="reinput" placeholder="请填写姓名" v-model="pageData.name"/>
-      </div>
-      <div class="item">
-        <div class="text">联系电话：</div>
-        <input type="text" class="reinput" placeholder="请填写联系电话" v-model="pageData.name"/>
-      </div>
-      <div class="item" @click="chooseAddr">
-        <div class="text">配送地址：</div>
-        <input type="text" disabled @click="chooseAddr" class="reinput" placeholder="请选择省、市、区" v-model="pageData.addr"/>
-        <!-- <div class="addr">{{pageData.addr}}</div> -->
+    <div class="contabox">
+      <div class="conttt">
+        <div class="qrcode">
+          <img src="../../assets/image/qrcodepub.jpeg" alt="" class="codeimg">
+        </div>
+        <div class="desc">
+          <div class="text">长按识别二维码，关注公众号</div>
+        </div>
       </div>
     </div>
-    <div class="dtaddr">
-      <textarea class="reinput" name="" placeholder="请填写详细地址(街道、楼牌号等)" v-model="pageData.addr"></textarea>
-    </div>
-    <div class="dtaddr2" @click="save">
-      设为默认地址
-    </div>
-    <van-popup v-model="showAddr" custom-class position="bottom" @close="onClose">
-      <van-area :area-list="areaList" @confirm="confirm"/>
-    </van-popup>
+    <!-- <div class="opts">
+      <div class="btn active">分享给好友</div>
+      <div class="btn">复制链接</div>
+    </div> -->
+    <div class="addbtn">更多惊喜等你来拿</div>
   </div>
 </template>
 <script lang="ts">
 import { getSelfInfo } from '@/api/hospital'
 import { Component, Vue } from 'vue-property-decorator';
-import { getURLParams } from '@/utils/auth'
-import { areaList } from '@/utils/address'
-import Cookies from 'js-cookie'
-import { State,
-  namespace } from 'vuex-class'
-const userModule = namespace('user')
 @Component({
 })
-export default class EditAddr extends Vue {
-  @userModule.State('addrInfo') private addrInfo: any
-  private showAddr: boolean = false
-  private areaList: any = areaList
-  private pageData: any = {
-    name: '请选择省、市、区',
-    mobile: '',
-    addr: '',
-    default: 0
-  }
-  private list: any[] = []
+export default class MopenPub extends Vue {
+  private pageData: any = {}
   private mounted(): void {
-    document.title = '修改资料'
-    if (this.$route.params.id) {
-      this.pageData = this.addrInfo
-    }
-    console.log(this.$route.params.id, this.addrInfo);
+    document.title = '查看公众号'
   }
-  private save() {
-    this.$router.goBack()
+  private setDefault(idx: number): void {
   }
-  private chooseAddr() {
-    this.showAddr = true
+  private del(idx: number): void {
   }
-  private onClose() {
-    this.showAddr = false
+  private edit(idx: number): void {
   }
-  private confirm(e: any) {
-    this.pageData.addr = Array.from(e, (i: any) => i.name).join(' ')
-    this.onClose()
+  private gopage(path: string) {
   }
 }
 </script>
 <style lang="scss" scoped>
 @import "~@/styles/utils.scss";
 .containers{
-  height: 100%;
   background: #F3F3F3;
-  .baseInfo{
-    @include wh(355, 160);
-    background: white;
-    border-radius: pm(15);
-    margin: pm(11) auto;
-    display: flex;
-    flex-direction: column;
-    .item{
-      flex: 1;
-      display: flex;
-      font-size: pm(15);
-      padding: 0 pm(12);
-      +.item{
-        border-top: 1px solid #DEDEDE;
-      }
-      >*{
-        align-self: center;
-      }
-      .text{
-        color: #2F2F2F;
-      }
-      .reinput, .addr{
-        flex: 1;
-        text-align: right;
-      }
-    }
-  }
-  .dtaddr{
-    background: white;
-    // @include wh(355, 81);
-    margin: 0 pm(10);
-    padding: pm(24) pm(11);
-    border-radius: pm(13);
-    font-size: pm(15);
-    textarea{
-      width: 100%;
-      height: 1.333333rem;
-    }
-  }
-  .dtaddr2{
-    background: white;
-    margin: pm(10) pm(10);
-    padding: pm(14) pm(11);
-    border-radius: pm(10);
-    font-size: pm(15);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  .contabox{
+    .conttt{
+      margin: pm(56) pm(17); 
+      .qrcode{
+        @include wh(341, 293);
+        display: flex;
+        border-radius: pm(8) pm(8) 0 0;
+        background: $m;
+        justify-content: space-around;
+        .codeimg{
+          align-self: center;
+          // border: 1px solid red;
+          @include wh(171, 173);
 
+        }
+      }
+      .desc{
+        padding: pm(15) 0;
+        background: white;
+        border-radius: 0 0 pm(8) pm(8);
+        text-align: center;
+        line-height: pm(25);
+        color: #A3A3A3;
+        font-size: pm(14);
+        box-shadow:0px 3px 7px 0px rgba(0, 0, 0, 0.11);
+      }
+    }
+  }
+  .opts{
+    height: pm(60);
+    display: flex;
+    >*{
+      align-self: center;
+      flex: 1;
+      color: $m;
+      font-size: pm(18);
+      height: 100%;
+      line-height: pm(60);
+      text-align: center;
+    }
+    .active{
+      color: white;
+      background: $m;
+    }
   }
 }
 </style>

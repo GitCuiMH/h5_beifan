@@ -4,40 +4,47 @@
       <div class="item2" :class="{active:tabIdx === 0}" @click="toggleTab(0)">登录密码修改</div>
       <div class="item2" :class="{active:tabIdx === 1}" @click="toggleTab(1)">交易密码修改</div>
     </div>
-    <div class="item dtaddr2">
+    <!-- <div class="item dtaddr2">
       <div class="text">输入登录账号：</div>
       <input type="text" class="reinput" placeholder="" v-model="pageData.name"/>
-    </div>
-    <div class="desc">请输入手机 138*****2573 收到的短信验证码</div>
+    </div> -->
+    <div class="desc">请输入手机 {{userInfo.mobile.toString().replace(/(\d{3})\d{4}(\d{4})/, '$1****$2')}} 收到的短信验证码</div>
     <div class="item dtaddr2">
-      <div class="text">输入校验码：</div>
-      <input type="text" class="reinput reinput2" placeholder="" v-model="pageData.name"/>
-      <div class="getcode">获取验证码</div>
+      <div class="text">输入验证码：</div>
+      <input type="text" class="reinput reinput2" placeholder="" v-model.trim="infos.code"/>
+      <div class="getcode" @click="getcode">{{pag}}</div>
     </div>
     <div class="baseInfo">
       <div class="item">
-        <div class="text">修改{{tabIdx ? '交易' : '登录'}}账号：</div>
-        <input type="text" class="reinput" placeholder="" v-model="pageData.name"/>
+        <div class="text">修改{{tabIdx ? '交易' : '登录'}}密码：</div>
+        <input type="text" class="reinput" placeholder="" v-model.trim="infos.password"/>
       </div>
       <div class="item">
-        <div class="text">确定{{tabIdx ? '交易' : '登录'}}账号：</div>
-        <input type="text" class="reinput" placeholder="" v-model="pageData.name"/>
+        <div class="text">确定{{tabIdx ? '交易' : '登录'}}密码：</div>
+        <input type="text" class="reinput" placeholder="" v-model.trim="infos.r_password"/>
       </div>
     </div>
-    <div class="addbtn">确定</div>
+    <div class="addbtn" @click="subData">确定</div>
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { sendSms, setPwd } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
-import Cookies from 'js-cookie'
+import { Mutation,
+  namespace } from 'vuex-class'
+const userModule = namespace('user')
 @Component({
 })
 export default class Set extends Vue {
+  @userModule.State('userInfo') private userInfo: any;
   private tabIdx: number = 0
-  private pageData: any = {
+  private pag: string = '获取验证码'
+  private infos: any = {
+    code: '',
+    password: '',
+    r_password: '',
+    type: 1
   }
-  private list: any[] = []
   private mounted(): void {
     document.title = '账号设置'
   }
@@ -45,7 +52,27 @@ export default class Set extends Vue {
     this.$router.goBack()
   }
   private toggleTab(idx: number): void {
+    this.pag = '获取验证码'
     this.tabIdx = idx
+    this.infos.type = idx + 1
+  }
+  private getcode() {
+    sendSms({mobile: this.userInfo.mobile, type: 0}).then((res: any) => {
+      this.pag = '已发送'
+    })
+  }
+  private subData() {
+    if (this.infos.password !== this.infos.r_password) {
+      this.$toast('两次密码不一致')
+      return
+    }
+    // console.log(this.infos);
+    setPwd(this.infos).then((res: any) => {
+      this.$toast(res.message)
+      setTimeout(() => {
+        this.$router.goBack()
+      }, 1000);
+    })
   }
 }
 </script>
@@ -137,7 +164,7 @@ export default class Set extends Vue {
   .desc{
     color: #666666;
     font-size: pm(12);
-    margin: pm(6) pm(16);
+    margin: pm(16) pm(16) pm(6) pm(16);
   }
   .addbtn{
     position: absolute;

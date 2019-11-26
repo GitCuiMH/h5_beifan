@@ -130,7 +130,7 @@ export default {
       border-top: 1px solid #CECECE;
       height: 1.3rem;
       width: 100%;
-      background: #48BCAB;
+      background: rgba(244, 176, 62, 1);
       text-align: center;
       line-height: 1.3rem;
       font-size: 0.45rem;

@@ -18,9 +18,10 @@
     <div class="dtaddr">
       <textarea class="reinput" name="" placeholder="请填写详细地址(街道、楼牌号等)" v-model="pageData.address"></textarea>
     </div>
-    <div class="dtaddr2" @click="save">
+    <!-- <div class="dtaddr2" @click="save">
       设为默认地址
-    </div>
+    </div> -->
+    <div class="addbtn" @click="save">保存</div>
     <van-popup v-model="showAddr" custom-class position="bottom" @close="onClose">
       <van-area :area-list="areaList" @confirm="confirm"/>
     </van-popup>
@@ -146,6 +147,9 @@ export default class EditAddr extends Vue {
     font-size: pm(15);
 
   }
+}
+.addbtn{
+  margin-top: pm(50);
 }
 </style>
 

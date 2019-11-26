@@ -29,9 +29,11 @@
       </div>
       <div class="concon">
         <span>{{userInfo.money}}</span>
+        <div class="tixianb" @click="gopage('/stixian')">去提现 > </div>
+        <div class="forpos"></div>
         <div class="btn">
-          <div class="con">
-            <span>去提现</span>
+          <div class="con" @click="gopage('zdlist')">
+            <span>账单明细</span>
             <div class="rectangle"></div>
           </div>
         </div>
@@ -94,7 +96,7 @@
         <div class="name">收货地址</div>
         <div class="rightIcon"></div>
       </div>
-      <div class="items" @click="gopage('set')">
+      <div class="items" @click="gopage('Setting')">
         <img src="../../assets/user/set.png" alt="" class="icon"/>
         <div class="name">账号设置</div>
         <div class="rightIcon"></div>
@@ -107,8 +109,12 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { lvList } from '@/utils/mainData'
 import { getUserInfo } from '@/api/mainpage'
+import { Mutation,
+  namespace } from 'vuex-class'
+const userModule = namespace('user')
 @Component
 export default class Self extends Vue {
+  @userModule.Mutation('SET_userInfo') private setInfo: any
   private userInfo: any = {
     level: 1
   }
@@ -116,6 +122,7 @@ export default class Self extends Vue {
   private mounted() {
     getUserInfo({}).then((res: any) => {
       this.userInfo = res.datas
+      this.setInfo(res.datas)
     })
   }
   private gopage(url: string): void {
@@ -207,13 +214,17 @@ export default class Self extends Vue {
   }
   .concon{
     display: flex;
-    justify-content: space-between;
+    // justify-content: space-between;
     font-size:pm(30);
     font-family:郑庆科黄油体Regular;
     font-weight:normal;
     color:rgba(255,255,255,1);
     >*{
       align-self: center;
+    }
+    .tixianb{
+      font-size: pm(10);
+      margin: .3rem 0 0 pm(5);
     }
     .btn{
       @include wh(70, 26);

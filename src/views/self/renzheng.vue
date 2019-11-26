@@ -3,45 +3,75 @@
     <div class="conbox boxshadow">
       <div class="inputblock">
         <span>*</span>真实姓名：
-        <input type="text" class="reinput">
+        <input type="text" v-model="pageData.realname" placeholder="请输入真实姓名" class="reinput">
       </div>
       <div class="inputblock">
         <span>*</span>身份证号：
-        <input type="text" class="reinput">
+        <input type="text" v-model="pageData.card" placeholder="请输入身份证号" class="reinput">
       </div>
     </div>
     <div class="conbox2 boxshadow">
       <div class="title">请上传身份证照片</div>
       <div class="imgs">
         <div class="pic">
-          <div class="cameraIcon"></div>
+          <div class="pics">
+            <img v-if="pageData.zm" :src="pageData.zm" alt="" class="avatar">
+            <div v-else class="cameraIcon"></div>
+            <van-uploader class="upload" :after-read="afterRead" />
+          </div>
           <div class="text">添加(正面)照片</div>
         </div>
         <div class="pic">
-          <div class="cameraIcon"></div>
+          <div class="pics">
+            <img v-if="pageData.fm" :src="pageData.fm" alt="" class="avatar">
+            <div v-else class="cameraIcon"></div>
+            <van-uploader class="upload" :after-read="afterRead1" />
+          </div>
           <div class="text">添加(背面)照片</div>
         </div>
       </div>
       <div class="desc">证件必须是清晰彩色原件电子版本。可以是扫描件或者数码拍摄照片。支持jpg、png、jpeg的图片格式</div>
     </div>
-    <div class="addbtn">保存上传</div>
+    <div class="addbtn" @click="save">保存上传</div>
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { setRz } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import Cookies from 'js-cookie'
 @Component({
 })
 export default class RenZheng extends Vue {
   private pageData: any = {
+    zm: '',
+    fm: '',
+    realname: '',
+    card: ''
   }
   private list: any[] = []
   private mounted(): void {
     document.title = '实名认证'
   }
   private save() {
-    this.$router.goBack()
+    console.log(this.pageData);
+    const params = {
+      name: this.pageData.realname,
+      idcard: this.pageData.card,
+      id_zm: this.pageData.zm,
+      id_fm: this.pageData.fm
+    }
+    setRz(params).then((res: any) => {
+      this.$toast(res.message)
+      setTimeout(() => {
+        this.$router.goBack()
+      }, 1000);
+    })
+  }
+  private afterRead(file: any) {
+    this.pageData.zm = file.content
+  }
+  private afterRead1(file: any) {
+    this.pageData.fm = file.content
   }
 }
 </script>
@@ -64,6 +94,9 @@ export default class RenZheng extends Vue {
     .title{
       color: #2F2F2F;
       font-size: pm(15);
+    }
+    .avatar{
+      width: 3.6rem;
     }
     .imgs{
       margin-top: pm(20);
@@ -100,6 +133,9 @@ export default class RenZheng extends Vue {
     margin-top: pm(68);
   }
 }
-
+.pics{
+  // width: 100%;
+  // height: 100%;
+}
 </style>
 

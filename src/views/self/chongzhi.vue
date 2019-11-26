@@ -1,15 +1,11 @@
 <template>
   <div class="containers">
-    <div class="banner">
-      <img src="../../assets/image/pay.png" alt="">
-      <span>待支付</span>
-    </div>
     <div class="selfinfos" @click="$router.push('/address')">
       <div class="cjinfos">
         <div class="name">{{addrInfo.user_name}}
           <span style="margin-left: 30px">{{addrInfo.user_mobile}}</span>
         </div>
-        <div class="cjaddr">{{(addrInfo.province_name ? addrInfo.province_name : '') + ' ' + (addrInfo.city_name ? addrInfo.city_name : '') + ' ' + (addrInfo.district_name ? addrInfo.district_name : '') + ' ' + (addrInfo.address ? addrInfo.address : '')}}</div>
+        <div class="cjaddr">{{addrInfo.province_name + ' ' + addrInfo.city_name + ' ' + addrInfo.district_name + ' ' + addrInfo.address}}</div>
       </div>
       <div class="rightIcon"></div>
     </div>
@@ -27,10 +23,6 @@
             <van-stepper v-model="infos.num" min="1" @change="stpChange" />
           </div>
         </div>
-      </div>
-      <div class="inputblock">
-        <div class="text">备注信息:</div>
-        <input type="text" v-model.trim="desc" placeholder="" class="reinput"/>
       </div>
     </div>
     <div class="probox ">
@@ -51,9 +43,8 @@
       </div>
     </div>
     <div class="optbtnsss">
-      <!-- <div class="forpos"></div> -->
+      <div class="forpos"></div>
       <div class="desc">应付:<span>￥{{gdInfo.price * infos.num}}</span></div>
-      <div class="btns del" @click="delordess">取消订单</div>
       <div class="btns" @click="subordess">提交订单</div>
     </div>
   </div>
@@ -73,7 +64,6 @@ export default class ShouHou extends Vue {
   @userModule.Mutation('SET_ADDRINFO') private setInfo: any
   private gdInfo: any = {}
   private selfGold: string = ''
-  private desc: string = ''
   private infos: any = {
     num: 1,
     wecheck: 1
@@ -108,39 +98,31 @@ export default class ShouHou extends Vue {
       this.sub()
     }
   }
-  private delordess() {
-    this.$router.goBack()
-  }
   private sub(ps = '') {
     const p = {
       id: this.$route.params.id,
       tc: this.skuInfos.name,
       num: this.infos.num,
       type: this.infos.wecheck,
-      desc: this.desc,
       address_id: this.addrInfo.id,
       paypwd: ps
     }
     const self = this
     subOrder(p).then((res: any) => {
       // this.$toast(res.message)
-      if (self.infos.wecheck) {
-        self.$router.push('/myorder/0')
-      } else {
-        WeixinJSBridge.invoke(
-          'getBrandWCPayRequest',
-          res.datas,
-          (res2: any) => {
-            let result = res2.err_msg.split(':');
-            result = result[result.length - 1];
-            if ( result === 'ok' ) {
-              self.$router.push('/myorder/0')
-            } else {
-              alert('支付失败');
-              // _self.close()
-            }
-          })
-      }
+      WeixinJSBridge.invoke(
+        'getBrandWCPayRequest',
+        res.datas,
+        (res2: any) => {
+          let result = res2.err_msg.split(':');
+          result = result[result.length - 1];
+          if ( result === 'ok' ) {
+            self.$router.push('/myorder/0')
+          } else {
+            alert('支付失败');
+            // _self.close()
+          }
+        })
     })
   }
   private stpChange(e: any) {
@@ -149,27 +131,6 @@ export default class ShouHou extends Vue {
 </script>
 <style lang="scss" scoped>
 @import "~@/styles/utils.scss";
-.banner{
-  height: pm(72);
-  display: flex;
-  padding: 0 pm(21);
-  color: white;
-  background: $m;
-  font-size: pm(14);
-  >*{
-    align-self: center;
-  }
-  img{
-    @include wh(43, 41);
-    margin-right: pm(7);
-  }
-}
-.inputblock{
-  margin-top: pm(18);
-  input{
-    flex: 1;
-  }
-}
 .optbtnsss{
   position: fixed;
   background: white;
@@ -182,8 +143,6 @@ export default class ShouHou extends Vue {
     align-self: center;
   }
   .desc{
-    flex: 1;
-    text-align: center;
     font-size: pm(13);
     color: #060606;
     span{
@@ -193,15 +152,12 @@ export default class ShouHou extends Vue {
   }
   .btns{
     @include wh(119, 47);
-    // margin-left: pm(17);
+    margin-left: pm(17);
     background: #FF3657;
     line-height: pm(47);
     text-align: center;
     color: white;
     font-size: pm(16);
-  }
-  .del{
-    background: #A0A0A0;
   }
 }
 .selfinfos{

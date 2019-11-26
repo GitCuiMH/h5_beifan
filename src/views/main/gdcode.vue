@@ -1,27 +1,28 @@
 <template>
   <div class="containers">
     <div class="userinfo">
-      <div class="avatar">
-        <img src="" alt="" class="avat">
-        <div class="name">forskan</div>
+      <div v-if="!u.id" class="unsa">该商品未售出</div>
+      <div v-if="u.id" class="avatar">
+        <img :src="u.avatar" alt="" class="avat">
+        <div class="name">{{u.name}}</div>
       </div>
-      <div class="infos">
+      <div v-if="u.id" class="infos">
         <div class="item">
           <img src="../../assets/sao/zs.png" alt="" class="icon">
-          <span>城市合伙人</span>
+          <span v-if="u.level">{{lvList[parseInt(u.level, 10) - 1].lvname}}</span>
         </div>
         <div class="item">
           <img src="../../assets/sao/wechat.png" alt="" class="icon">
-          <span>forskan</span>
+          <span>{{u.name}}</span>
         </div>
       </div>
       <div class="gdinfo">
         <div class="item">
-          <div class="tt">阿斯顿发</div>
+          <div class="tt">{{p.title}}</div>
           <div>产品名称</div>
         </div>
         <div class="item">
-          <div class="tt">234234</div>
+          <div class="tt">{{p.price}}</div>
           <div>全国统一零售价</div>
         </div>
       </div>
@@ -32,41 +33,41 @@
         <span>代理查询</span>
       </div>
       <div class="searchbox">
-        <input type="text" class="reinput searinput"/>
-        <div class="btn">查询</div>
+        <input type="text" v-model.trim="key" placeholder="请输入代理手机号" class="reinput searinput"/>
+        <div class="btn" @click="searchProxy">查询</div>
       </div>
       <div class="oplist">
         <div class="item">
-          <div class="iicon">
+          <div class="iicon" @click="gopage('/mgdxinxi/' + p.id)">
             <img src="../../assets/sao/info.png" alt="" class="icon"/>
           </div>
           <div class="text">产品信息</div>
         </div>
-        <div class="item brl">
+        <div class="item brl" @click="gopage('/mgdxilie')">
           <div class="iicon">
             <img src="../../assets/sao/list.png" alt="" class="icon"/>
           </div>
           <div class="text">产品系列</div>
         </div>
-        <div class="item brl">
+        <div class="item brl" @click="gopage('/mopenpub')">
           <div class="iicon">
             <img src="../../assets/sao/group.png" alt="" class="icon"/>
           </div>
           <div class="text">查看公众号</div>
         </div>
-        <div class="item">
+        <div class="item" @click="gopage('/mfagnweirenz')">
           <div class="iicon">
             <img src="../../assets/sao/renzheng.png" alt="" class="icon"/>
           </div>
           <div class="text">防伪认证</div>
         </div>
-        <div class="item brl">
+        <div class="item brl" @click="gopage('/mpppic/' + p.id)">
           <div class="iicon">
             <img src="../../assets/sao/photos.png" alt="" class="icon"/>
           </div>
           <div class="text">买家照片</div>
         </div>
-        <div class="item brl">
+        <div class="item brl" @click="gopage('/mzjreport/' + p.id)">
           <div class="iicon">
             <img src="../../assets/sao/report.png" alt="" class="icon"/>
           </div>
@@ -78,22 +79,50 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { getScanGinfo, agentsearch } from '@/api/mainpage'
+import { lvList } from '@/utils/mainData'
+import { getURLParams } from '@/utils/auth'
+
+import { Mutation,
+  namespace } from 'vuex-class'
+const userModule = namespace('user')
 @Component({
 })
 export default class MgdCode extends Vue {
-  private pageData: any = {
+  @userModule.Mutation('TOGGLE_gdindtl') private setInfos: any
+  private p: any = {
+  }
+  private key: string = ''
+  private lvList: any[] = lvList
+  private u: any = {
+    level: 1
   }
   private list: any[] = []
   private mounted(): void {
     document.title = '商品扫码'
+    getScanGinfo({sn: getURLParams().sn}).then((res: any) => {
+      this.u = res.datas.user
+      this.p = res.datas.product
+      this.setInfos(res.datas.product)
+    })
   }
-  private save() {
-    this.$router.goBack()
+  private gopage(path: string) {
+    this.$router.push(path)
+  }
+  private searchProxy() {
+    agentsearch({mobile: this.key}).then((res: any) => {
+      this.u = res.datas
+    })
   }
 }
 </script>
 <style lang="scss" scoped>
 @import "~@/styles/utils.scss";
+.unsa{
+  text-align: center;
+  padding: pm(80) 0;
+  font-size: pm(20);
+}
 .containers{
   height: 100%;
   background: #F3F3F3;

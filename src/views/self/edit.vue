@@ -3,83 +3,111 @@
     <div class="baseInfo box1">
       <div class="item ">
         <div class="text">头像</div>
-        <img src="../../assets/image/defavatar.png" alt="" class="avatar">
+        <div class="pics">
+          <img v-if="userInfo.avatar" :src="userInfo.avatar" alt="" class="avatar">
+          <img v-else src="../../assets/image/defavatar.png" alt="" class="avatar">
+          <van-uploader class="upload" :after-read="afterRead" />
+        </div>
+        <!-- <img src="../../assets/image/defavatar.png" alt="" class="avatar"> -->
       </div>
     </div>
     <div class="baseInfo">
       <div class="item">
         <div class="text">用户名</div>
-        <input type="text" class="reinput" placeholder="" v-model="pageData.name"/>
+        <input type="text" class="reinput" placeholder="请输入用户名" v-model="userInfo.name"/>
         <div class="rightIcon"></div>
       </div>
       <div class="item" @click="chooseAddr(1)">
         <div class="text">性别</div>
-        <div class="span">{{pageData.sex === 1 ? '男' : '女'}}</div>
+        <div class="span">{{userInfo.sex === 1 ? '男' : '女'}}</div>
         <div class="rightIcon"></div>
       </div>
     </div>
     <div class="baseInfo box3">
       <div class="item">
         <div class="text">邮箱</div>
-        <input type="text" class="reinput" placeholder="" v-model="pageData.name"/>
+        <input type="text" class="reinput" placeholder="请输入邮箱" v-model="userInfo.email"/>
         <div class="rightIcon"></div>
       </div>
       <div class="item">
         <div class="text">手机号码</div>
-        <input type="text" class="reinput" placeholder="" v-model="pageData.name"/>
+        <input type="text" class="reinput" placeholder="请输入手机号" v-model="userInfo.mobile"/>
         <div class="rightIcon"></div>
       </div>
       <div class="item" @click="chooseAddr(0)">
         <div class="text">地区</div>
-        <div class="span">{{pageData.addr ? pageData.addr : '选择地区'}}</div>
+        <div class="span">{{userInfo.addr ? userInfo.addr : '选择地区'}}</div>
         <div class="rightIcon"></div>
       </div>
     </div>
     <div class="addbtn" @click="save">确定</div>
     <van-popup v-model="showAddr" custom-class position="bottom" @close="onClose">
-      <van-area v-if="!sexm" :area-list="areaList" @confirm="confirm"/>
-      <div class="sex" @click="setSex(1)">男</div>
-      <div class="sex" @click="setSex(2)">女</div>
+      <van-area v-if="!sexm" :area-list="areaList" @confirm="confirm" @cancel="onClose"/>
+      <div v-if="sexm" class="sex" @click="setSex(1)">男</div>
+      <div v-if="sexm" class="sex" @click="setSex(2)">女</div>
     </van-popup>
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { editUserInfo, getUserInfo } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import { areaList } from '@/utils/address'
-
+import { upload } from '@/utils/auth'
 import Cookies from 'js-cookie'
 @Component({
 })
 export default class Edit extends Vue {
+  private pic: string = ''
   private showAddr: boolean = false
   private sexm: number = 0
   private areaList = areaList
-  private pageData: any = {
-    addr: '',
-    sex: '男'
-  }
+  private userInfo: any = {}
   private list: any[] = []
   private mounted(): void {
     document.title = '修改资料'
+    getUserInfo({}).then((res: any) => {
+      this.userInfo = res.datas
+    })
   }
   private save() {
-    this.$router.goBack()
+    // this.$router.goBack()
+    const param = {
+      avatar: this.userInfo.avatar,
+      nickname: this.userInfo.nickname,
+      sex: this.userInfo.sex,
+      email: this.userInfo.email,
+      province: this.userInfo.province,
+      city: this.userInfo.city,
+      district: this.userInfo.district
+    }
+    editUserInfo(param).then((res: any) => {
+      this.$toast(res.message)
+      setTimeout(() => {
+        this.$router.goBack()
+      }, 1000);
+    })
   }
   private chooseAddr(mark: number) {
     this.sexm = mark
     this.showAddr = true
   }
   private setSex(mark: number) {
-    this.pageData.sex = mark
+    this.userInfo.sex = mark
     this.onClose()
   }
   private onClose() {
     this.showAddr = false
   }
   private confirm(e: any) {
-    this.pageData.addr = Array.from(e, (i: any) => i.name).join(' ')
+    console.log(e);
+    this.userInfo.addr = Array.from(e, (i: any) => i.name).join(' ')
+    this.userInfo.province = e[0].code
+    this.userInfo.city = e[1].code
+    this.userInfo.district = e[2].code
     this.onClose()
+  }
+  private afterRead(file: any) {
+    this.userInfo.avatar = file.content
   }
 }
 </script>
@@ -134,6 +162,10 @@ export default class Edit extends Vue {
     bottom: pm(65);
   }
 }
+.pics{
+  @include wh(45, 45);
+  border-radius: 50%;
+}
 .avatar{
   @include wh(45, 45);
   border-radius: 50%;
@@ -151,5 +183,6 @@ export default class Edit extends Vue {
   height: pm(40);
   border-bottom: 1px solid #eeeeee;
 }
+
 </style>
 

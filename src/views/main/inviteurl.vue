@@ -3,7 +3,10 @@
     <div class="contabox">
       <div class="conttt">
         <div class="qrcode">
-          <img src="" alt="" class="codeimg">
+          <img :src="qrcodeImg" class="codeimg" alt="">
+          <div class="qrcodeimg" v-show="false">
+            <qrcode-vue :value="qrcodeUrl" size='200' level="H"></qrcode-vue>
+          </div>
         </div>
         <div class="desc">
           <div class="text">点击二维码可保存相册</div>
@@ -12,26 +15,86 @@
       </div>
     </div>
     <div class="opts">
-      <div class="btn active">分享给好友</div>
-      <div class="btn">复制链接</div>
+      <div class="btn active" @click="share">分享给好友</div>
+      <div class="btn copy" :data-clipboard-text="qrcodeUrl" @click="copy">复制链接</div>
+    <!-- <div class="edit copy" data-clipboard-text="'it.car_num'" @click="copy">复制</div> -->
+    </div>
+    <div v-if="layer > 0" class="layer" @click="layerclose">
+      <div class="layercontent"></div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { jssdk, invite, getUserInfo } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
+import { copy } from '@/utils/auth'
+import { lvList } from '@/utils/mainData'
+import QrcodeVue from 'qrcode.vue'
+declare var wx: any
 @Component({
+  components: {
+    QrcodeVue
+  }
 })
 export default class Proxy extends Vue {
   private pageData: any = {}
+  private layer: number = 0;
+  private qrcodeImg: string = ''
+  private getqcode: boolean = false
+  private qrcodeUrl: string = ''
   private mounted(): void {
     document.title = '生成邀请链接'
+    getUserInfo({}).then((uf: any) => {
+      // console.log(uf.datas.nickname + '邀请你成为牛皮世家代理');
+      // console.log('申请的代理级别是：' + lvList[parseInt(this.$route.params.lv, 10)].lvname);
+      invite({level: this.$route.params.lv}).then((resss: any) => {
+        this.qrcodeUrl = resss.datas.url
+        this.getqcode = true
+        jssdk({url: window.location.href}).then((res: any) => {
+          // console.log(id);
+          wx.config({
+            debug: false,
+            appId: res.datas.appId,
+            timestamp: res.datas.timestamp,
+            nonceStr: res.datas.nonceStr,
+            signature: res.datas.signature,
+            jsApiList: ['updateAppMessageShareData', 'scanQRCode', 'updateTimelineShareData', 'onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareQZone']
+          })
+          wx.ready(() => {
+            const share = {
+              title: uf.datas.nickname + '邀请你成为牛皮世家代理',
+              desc: '申请的代理级别是：' + lvList[parseInt(this.$route.params.lv, 10) - 1].lvname,
+              link: resss.datas.url,
+              imgUrl: 'http://beifan.400539.com/logo.jpg',
+            };
+            console.log(share);
+            wx.updateAppMessageShareData(share);
+            wx.updateTimelineShareData(share);
+            wx.onMenuShareTimeline(share);
+            wx.onMenuShareAppMessage(share);
+            wx.onMenuShareQQ(share);
+            wx.onMenuShareQZone(share);
+          })
+        })
+      })
+    })
   }
-  private setDefault(idx: number): void {
+  private updated() {
+    if (this.getqcode) {
+      const canvas = document.getElementsByTagName('canvas')[0]
+      this.qrcodeImg = canvas.toDataURL('image/png')
+      this.getqcode = false
+    }
   }
-  private del(idx: number): void {
+  private share() {
+    this.layer = 1
   }
-  private edit(idx: number): void {
+  private copy() {
+    copy()
+    this.$toast('已复制')
+  }
+  private layerclose() {
+    this.layer = 0;
   }
   private gopage(path: string) {
   }
@@ -56,7 +119,7 @@ export default class Proxy extends Vue {
         justify-content: space-around;
         .codeimg{
           align-self: center;
-          border: 1px solid red;
+          // border: 1px solid red;
           @include wh(171, 173);
 
         }

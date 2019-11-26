@@ -21,6 +21,18 @@ export default new Router({
       name: 'Main',
       component: () => import('@/views/main.vue'),
     },
+    // 等级管理
+    {
+      path: '/about',
+      name: 'about',
+      component: () => import('@/views/About.vue'),
+    },
+    // 等级管理
+    {
+      path: '/lvmanage',
+      name: 'LvManager',
+      component: () => import('@/views/lvmanager.vue'),
+    },
     // 登录
     {
       path: '/login',
@@ -63,6 +75,24 @@ export default new Router({
       name: 'QrCode',
       component: () => import('@/views/self/qrcode.vue'),
     },
+    // 个人中心-提现
+    {
+      path: '/stixian',
+      name: 'StiXian',
+      component: () => import('@/views/self/tixian.vue'),
+    },
+    // 个人中心-查看收款二维码
+    {
+      path: '/ssqrcode',
+      name: 'SQrCode',
+      component: () => import('@/views/self/seeqrcode.vue'),
+    },
+    // 个人中心-设置。
+    {
+      path: '/setting',
+      name: 'Setting',
+      component: () => import('@/views/self/setting.vue'),
+    },
     // 个人中心-我的订单
     {
       path: '/myorder/:idx',
@@ -75,9 +105,15 @@ export default new Router({
       name: 'SubOrder',
       component: () => import('@/views/self/order.vue'),
     },
+    // 订单-确认订单
+    {
+      path: '/orderinfo/:id',
+      name: 'OrderInfo',
+      component: () => import('@/views/self/orderdtl.vue'),
+    },
     // 订单-退款/售后
     {
-      path: '/shouhou/:idx',
+      path: '/shouhou/:id',
       name: 'ShouHou',
       component: () => import('@/views/self/shouhou.vue'),
     },
@@ -119,15 +155,57 @@ export default new Router({
     },
     // 主页-邀请链接
     {
-      path: '/minviteurl',
+      path: '/minviteurl/:lv',
       name: 'MinviteUrl',
       component: () => import('@/views/main/inviteurl.vue'),
+    },
+    // 邀请回来
+    {
+      path: '/newppadd',
+      name: 'NewppAdd',
+      component: () => import('@/views/login/newppadd.vue'),
     },
     // 主页-商品扫码
     {
       path: '/mgdcode',
       name: 'MgdCode',
       component: () => import('@/views/main/gdcode.vue'),
+    },
+    // 商品扫码-查看公众号
+    {
+      path: '/mopenpub',
+      name: 'MopenPub',
+      component: () => import('@/views/main/openpub.vue'),
+    },
+    // 商品扫码-产品系列
+    {
+      path: '/mgdxilie',
+      name: 'MgdXiLie',
+      component: () => import('@/views/main/gdxilie.vue'),
+    },
+    // 商品扫码-产品信息
+    {
+      path: '/mgdxinxi/:id',
+      name: 'MgdXinXi',
+      component: () => import('@/views/main/goodinfos.vue'),
+    },
+    // 商品扫码-质检报告
+    {
+      path: '/mzjreport/:id',
+      name: 'MzjReport',
+      component: () => import('@/views/main/zjreport.vue'),
+    },
+    // 商品扫码-买家照片
+    {
+      path: '/mpppic/:id',
+      name: 'MppPic',
+      component: () => import('@/views/main/pppic.vue'),
+    },
+    // 商品扫码-防伪认证
+    {
+      path: '/mfagnweirenz',
+      name: 'MRrenz',
+      component: () => import('@/views/main/fangweirenz.vue'),
     },
     // 主页-审核管理
     {
@@ -147,9 +225,15 @@ export default new Router({
       name: 'MxiaDan',
       component: () => import('@/views/main/xiadan.vue'),
     },
+    // 商品-详情
+    {
+      path: '/mgdinfo/:id',
+      name: 'MgdInfo',
+      component: () => import('@/views/main/gdinfo.vue'),
+    },
     // 主页-工厂出货
     {
-      path: '/mchuhuo',
+      path: '/mchuhuo/:id',
       name: 'MchuHuo',
       component: () => import('@/views/main/comchuohuo.vue'),
     },

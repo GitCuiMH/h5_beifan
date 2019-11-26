@@ -31,7 +31,37 @@ export function getURLParams() {
   }
   return theRequest
 }
+import Clipboard from 'clipboard'
 
+export function copy() {
+  return new Clipboard('.copy')
+}
+export function upload(files: any, callback: any= () => {}) {
+  let file: any[] = []
+  const imgs: string[] = []
+  file = files[0] ? files : [files]
+  // const client = new OSS({
+  //   region: 'oss-cn-qingdao',
+  //   accessKeyId: 'LTAI4Fh4GqSydQQNrgPnBaGY',
+  //   accessKeySecret: 'FWPYlHaaZkvqd7EnXgzLsJE9ke3jW3',
+  //   bucket: 'quansuwangluo'
+  // })
+  // file.forEach((it) => {
+  //   const name =
+  //     'insurance/pic/' +
+  //     getRandomString(6) +
+  //     new Date().getTime() +
+  //     it.file.name.substr(it.file.name.lastIndexOf('.'));
+  //   client.multipartUpload(name, it.file, {
+  //     }).then((data) => {
+  //       imgs.push(data.name)
+  //       if (imgs.length >= file.length) {
+  //         callback(imgs)
+  //       }
+  //     }).catch((err) => {
+  //     });
+  // })
+}
 export function getSign(param: any) {
   if (!param) {
     param = {}

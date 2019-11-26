@@ -17,7 +17,8 @@ declare module 'vue/types/vue' {
   interface Vue {
     $toast: Toast,
     $selfMsgBox: any,
-    $selfConfirm: any
+    $selfConfirm: any,
+    $selfProm: any,
   }
 }
 // declare module 'vue-router/types/vue' {

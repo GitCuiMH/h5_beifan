@@ -2,12 +2,12 @@
   <div class="containers">
     <div class="header">
       <div class="tt">我的余额</div>
-      <div class="num">2342342</div>
+      <div class="num">{{pageData.all_money}}</div>
       <div class="detail">
-        <div class="out">支出： 2342</div>
-        <div class="in">收入： 2342</div>
+        <div class="out">支出： {{pageData.zc}}</div>
+        <div class="in">收入： {{pageData.sr}}</div>
       </div>
-      <div class="tixianbtn">
+      <div class="tixianbtn" @click="$router.push('/stixian')">
         <img src="../../assets/image/tixian.png" alt="" class="icon">
         <div class="tixian">提现</div>
         <div class="rightcon"></div>
@@ -33,15 +33,15 @@
       @load="onLoad"
     >
       <div class="item" v-for="(it, idx) in list" :key="idx">
-        <img :src="it.avatar" alt="" class="avatar">
+        <!-- <img :src="it" alt="" class="avatar"> -->
         <div class="details">
           <div class="infos">
-            <div class="target">{{it.content}}</div>
-            <div class="num">￥{{it.num}}</div>
+            <div class="target">{{it.desc}}</div>
+            <div class="num">￥{{it.amount}}</div>
           </div>
           <div class="optb">
-            <div class="time">{{it.time.substring(0, 10)}}</div>
-            <div class="desc">二维码收款</div>
+            <div class="time">{{it.createtime}}</div>
+            <div class="desc">{{ststList[it.status]}}</div>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { getAmount } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import Cookies from 'js-cookie'
 import { dateList, dkind } from '@/utils/mainData'
@@ -61,68 +61,15 @@ export default class ZdList extends Vue {
   private loading: boolean = false
   private finished: boolean = false
   private page: number = 1
+  private ststList: string[] = ['消费', '收款', '提现', '退款', '返利']
   private dplist: any = dateList
   private dplist2: any = dkind
   private pageData: any = {
   }
-  private list: any[] = [{
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }, {
-    avatar: '',
-    content: '提现到',
-    time: '2019-10-10 10:10:10',
-    num: '223'
-  }]
+  private list: any[] = []
   private mounted(): void {
     document.title = '账单细节'
+    this.getData()
   }
   private dpchange() {
     console.log(this.dpIndex);
@@ -131,23 +78,26 @@ export default class ZdList extends Vue {
     console.log(this.dpIndex2);
   }
   private getData(p = 1) {
-    // this.loading = true
-    // getUserList({type: this.tabIndex, page: p, key: this.searchkey}).then((res: any) => {
-    //   // console.log(res);
-    //   this.loading = false
-    //   if (p > 1) {
-    //     this.datalist = this.datalist.concat(res.datas)
-    //   } else {
-    //     this.datalist = res.datas
-    //   }
-    //   if (this.datalist.length >= res.total) {
-    //     this.finished = true
-    //   }
-    // })
+    this.loading = true
+    getAmount({page: p}).then((res: any) => {
+      // console.log(res);
+      this.pageData = res.datas
+      this.loading = false
+      if (p > 1) {
+        this.list = this.list.concat(res.datas.data)
+      } else {
+        this.list = res.datas.data
+      }
+      if (this.list.length >= res.total) {
+        this.finished = true
+      }
+    })
   }
   private onLoad() {
-    this.page++
-    this.getData(this.page)
+    if (this.list.length) {
+      this.page++
+      this.getData(this.page)
+    }
   }
 }
 </script>
@@ -245,10 +195,10 @@ export default class ZdList extends Vue {
       .avatar{
         @include wh(49, 49);
         border-radius: 50%;
-        margin-right: pm(5);
         border: 1px solid red;
       }
       .details{
+        margin-left: pm(5);
         flex: 1;
         border-bottom: 1px solid #DEDEDE;
         display: flex;

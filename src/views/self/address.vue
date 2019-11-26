@@ -1,7 +1,7 @@
 <template>
   <div class="containers">
     <div class="list">
-      <div class="item boxshadow" v-for="(it, idx) in list" :key="idx">
+      <div class="item boxshadow" v-for="(it, idx) in list" :key="idx" @click="selAddr(idx)">
         <div class="header">
           <div class="name">收货人: {{it.user_name}}</div>
           <div class="num">{{it.user_mobile}}</div>
@@ -62,9 +62,11 @@ export default class Proxy extends Vue {
   private edit(idx: number): void {
     this.setInfo(this.list[idx])
     // this.$router.push('/editaddr/' + this.list[idx].id)
-    this.$router.push('/editaddr/3')
+    this.$router.push('/editaddr/' + this.list[idx].id)
   }
-  private gopage(path: string) {
+  private selAddr(idx: number) {
+    this.setInfo(this.list[idx])
+    this.$router.goBack()
   }
 }
 </script>

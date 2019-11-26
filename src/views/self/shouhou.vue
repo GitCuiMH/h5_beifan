@@ -2,63 +2,91 @@
   <div class="containers">
     <div class="cjinfos">
       <div class="text">厂家信息：</div>
-      <div class="name">王小二</div>
-      <div class="name">23423423423</div>
+      <div class="name">{{gdInfo.user_name}}</div>
+      <div class="name">{{gdInfo.user_mobile}}</div>
     </div>
     <div class="cjinfos">
       <div class="text">厂家地址：</div>
-      <div class="cjaddr">王小二厂家地址</div>
+      <div class="cjaddr">{{gdInfo.province_name + ' ' + gdInfo.city_name + ' ' + gdInfo.district_name + ' ' + gdInfo.address}}</div>
     </div>
     <div class="linebk"></div>
     <div class="probox gdinfos">
-      <img src="" alt="">
-      <div class="gdname">阿拉斯加地方垃圾水电费阿拉时代峻峰阿拉斯加地方垃圾水电费阿拉时代峻峰阿拉斯加地方垃圾水电费阿拉时代峻峰</div>
+      <img :src="'http://beifan.400539.com' + gdInfo.product_img" alt="">
+      <div class="gdname">{{gdInfo.product_name}}</div>
     </div>
     <div class="probox boxshadow">
       <div class="title leftborder">换货信息</div>
       <div class="inputblock">
         物流编码：
-        <input type="text" class="reinput">
+        <input type="text" v-model.trim="infos.sn" class="reinput">
       </div>
       <div class="inputblock">
         换货说明：
-        <input type="text" class="reinput">
+        <input type="text" v-model.trim="infos.desc" class="reinput">
       </div>
       <div class="descbox">
         <div class="desc">
           <div class="tit">换货数量</div>
-          <div class="con">最多可换{{infos.num}}件</div>
+          <div class="con">最多可换{{gdInfo.product_num}}件</div>
         </div>
-        <van-stepper v-model="infos.num" min="5" max="8" />
+        <van-stepper v-model="infos.num" min="1" :max="gdInfo.product_num" />
       </div>
       <div class="addr">
-        <div class="text">收货地址222</div>
+        <div class="text">收货地址:</div>
         <div class="addrinfos">
-          <div class="addrtext">123123123</div>
-          <div class="addrtext">地方阿斯顿发阿萨德发</div>
+          <div class="addrtext">{{gdInfo.user_name}}
+            <span style="margin-left: 30px">{{gdInfo.user_mobile}}</span>
+          </div>
+          <div class="addrtext">{{gdInfo.province_name + ' ' + gdInfo.city_name + ' ' + gdInfo.district_name + ' ' + gdInfo.address}}</div>
         </div>
         <div class="rightIcon"></div>
       </div>
     </div>
-    <div class="awbtn">提交换货</div>
+    <div class="awbtn" @click="save">提交换货</div>
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { getOrderInfo, afterSale } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import Cookies from 'js-cookie'
+import { Mutation,
+  namespace } from 'vuex-class'
+const userModule = namespace('user')
 @Component({
 })
 export default class ShouHou extends Vue {
+  @userModule.State('addrInfo') private addrInfo: any
+  @userModule.Mutation('SET_ADDRINFO') private setInfo: any
   private infos: any = {
-    num: 5
+    id: 0,
+    num: 1,
+    sn: '',
+    desc: ''
+  }
+  private gdInfo: any = {
+    user_name: '',
+    user_mobile: '',
+    product_tc: '',
   }
   private list: any[] = []
   private mounted(): void {
     document.title = '换货/售后'
+    this.infos.id = this.$route.params.id
+    getOrderInfo({id: this.$route.params.id}).then((res: any) => {
+      this.gdInfo = res.datas
+    })
   }
   private save() {
-    this.$router.goBack()
+    if (!this.infos.sn) {
+      this.$toast('请填写物流编码')
+      return
+    }
+    afterSale(this.infos).then((res: any) => {
+      this.$toast(res.message)
+      setTimeout(() => {
+        this.$router.goBack()
+      }, 1000);
+    })
   }
 }
 </script>
@@ -118,7 +146,7 @@ export default class ShouHou extends Vue {
   border-radius:.266667rem;
   img{
     @include wh(78, 78);
-    border: 1px solid red;
+    // border: 1px solid red;
     margin-right: pm(13);
   }
   .gdname{
@@ -162,7 +190,9 @@ export default class ShouHou extends Vue {
     }
   }
   .addrtext{
-    text-align: right;
+    flex: 1;
+    // text-align: right;
+    margin-left: pm(10);
     +.addrtext{
       margin-top: pm(4);
     }

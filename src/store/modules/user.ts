@@ -2,31 +2,38 @@ import { Commit } from 'vuex'
 export default{
   namespaced: true,
   state: {
+    userInfo: {},
     addrInfo: {},
-
-    docInfos: {},
+    tabIndex: 0,
+    skuInfos: {},
     userList: [],
-    guahaoInfos: -1,
+    gdindtl: -1,
     loading: false,
     introType: 0,
     name: 'username',
     value: 'uservalue'
   },
   mutations: {
+    SET_userInfo: (state: any, infos: any) => {
+      state.userInfo = infos
+    },
+    SET_tabIndex: (state: any, infos: any) => {
+      state.tabIndex = infos
+    },
     SET_ADDRINFO: (state: any, infos: any) => {
       state.addrInfo = infos
     },
     TOGGLE_VALUE: (state: any, device: string) => {
       state.value = device
     },
-    TOGGLE_GHINFOS: (state: any, infos: number) => {
-      state.guahaoInfos = infos
+    TOGGLE_gdindtl: (state: any, infos: number) => {
+      state.gdindtl = infos
     },
     TOGGLE_USERLISTS: (state: any, infos: number) => {
       state.userList = infos
     },
     TOGGLE_DOCINFO: (state: any, info: string) => {
-      state.docInfos = info
+      state.skuInfos = info
     },
     TOGGLE_LOADING: (state: any, device: boolean) => {
       state.loading = device

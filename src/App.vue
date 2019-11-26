@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <transition :name="transitionName">
-      <keep-alive include="Main,GuaHao,ChongZhiRecord">
+      <keep-alive include="GuaHao,ChongZhiRecord">
         <router-view class="child-view totalBox"/>
       </keep-alive>
     </transition>
@@ -15,12 +15,24 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import router from './router';
 import { namespace } from 'vuex-class'
+import { getURLParams } from '@/utils/auth'
+import Cookies from 'js-cookie';
 const userModule = namespace('user')
 @Component({
 })
 export default class App extends Vue {
   @userModule.State('loading') private loading: any
   private transitionName: string = 'slide-left'
+  private unCheck: string[] = [
+    'NewppAdd',
+    'MgdCode',
+    'MgdXinXi',
+    'MgdXiLie',
+    'MopenPub',
+    'MzjReport',
+    'MppPic',
+    'MRrenz',
+  ]
   @Watch('$route', { immediate: true })
   private changeRouter(route: any) {
     const isBack = this.$router.isBack
@@ -30,6 +42,19 @@ export default class App extends Vue {
       this.transitionName = 'slide-left'
     }
     this.$router.isBack = false
+    // path=invite&plv
+    // if (getURLParams().path == 'invite') {
+    //   this.$router.push('/minviteurl/'+ getURLParams().plv)
+    //   return
+    // }
+    // 不校验token
+    if (this.unCheck.includes(route.name) || route.name == null) {
+
+    } else {
+      if (!Cookies.get('x_tk')) {
+        this.$router.push('/login')
+      }
+    }
   }
   private mounted(): void {
   }

@@ -7,26 +7,26 @@
     <img v-if="user.lv == 4" src="../../assets/user/lv4.png" alt="" class="bk"/>
     <img v-if="user.lv == 5" src="../../assets/user/lv5.png" alt="" class="bk"/>
     <img v-if="user.lv == 6" src="../../assets/user/lv6.png" alt="" class="bk"/>
-    <!-- <div class="ttname">公司名称：牛皮世家</div> -->
-    <div class="selectblock" @click="showCop = true">
+    <div class="ttname">公司名称：牛皮世家</div>
+    <!-- <div class="selectblock" @click="showCop = true">
       <div class="text">{{user.copName}}</div>
       <img src="../../assets/image/shape.png" alt="" class="icon">
       <div v-if="showCop" class="lvlist">
         <div class="item" v-for="(it, idx) in copList" :key="idx" @click.stop="setCop(idx)">{{it}}</div>
       </div>
-    </div>
+    </div> -->
     <div class="selectblock" @click="showLv = true">
       <div class="text">{{user.lvName}}</div>
       <img src="../../assets/image/shape.png" alt="" class="icon">
       <div v-if="showLv" class="lvlist">
-        <div class="item" v-for="(it, idx) in lvList" :key="idx" @click.stop="setLv(idx)">{{it.lvname}}</div>
+        <div v-if="idx < 4 && idx < userInfo.level" class="item" v-for="(it, idx) in lvList" :key="idx" @click.stop="setLv(idx)">{{it.lvname}}</div>
       </div>
     </div>
-    <div class="addbtn larget" @click="$router.push('/minviteurl')">生成邀请链接</div>
+    <div class="addbtn larget" @click="$router.push('/minviteurl/' + user.lv)">生成邀请链接</div>
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { getUserInfo } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import { getURLParams } from '@/utils/auth'
 import { lvList, sexs } from '@/utils/mainData'
@@ -43,13 +43,18 @@ export default class MnewAdd extends Vue {
   private showCop: boolean = false
   private showLv: boolean = false
   private lvList: any[] = lvList
-  private mounted(): void {
-    document.title = '新人加盟'
+  private userInfo: any = {
+    level: 1
+  }
+  private mounted() {
+    getUserInfo({}).then((res: any) => {
+      this.userInfo = res.datas
+    })
   }
   private setLv(idx: number): void {
     this.showLv = false
     this.user.lvName = this.lvList[idx].lvname
-    this.user.lv = idx
+    this.user.lv = idx + 1
   }
   private gopage(path: string): void  {
   }
@@ -95,7 +100,7 @@ export default class MnewAdd extends Vue {
       background: white;
       position: absolute;
       left: 0;
-      top: pm(33);
+      top: pm(38);
       width: 100%;
       color: #434343;
       font-size: pm(14);

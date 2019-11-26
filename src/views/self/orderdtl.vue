@@ -1,36 +1,28 @@
 <template>
   <div class="containers">
-    <div class="banner">
-      <img src="../../assets/image/pay.png" alt="">
-      <span>待支付</span>
-    </div>
-    <div class="selfinfos" @click="$router.push('/address')">
+    <div class="selfinfos">
       <div class="cjinfos">
-        <div class="name">{{addrInfo.user_name}}
-          <span style="margin-left: 30px">{{addrInfo.user_mobile}}</span>
+        <div class="name">{{gdInfo.user_name}}
+          <span style="margin-left: 30px">{{gdInfo.user_mobile}}</span>
         </div>
-        <div class="cjaddr">{{(addrInfo.province_name ? addrInfo.province_name : '') + ' ' + (addrInfo.city_name ? addrInfo.city_name : '') + ' ' + (addrInfo.district_name ? addrInfo.district_name : '') + ' ' + (addrInfo.address ? addrInfo.address : '')}}</div>
+        <div class="cjaddr">{{gdInfo.province_name + ' ' + gdInfo.city_name + ' ' + gdInfo.district_name + ' ' + gdInfo.address}}</div>
       </div>
-      <div class="rightIcon"></div>
+      <!-- <div class="rightIcon"></div> -->
     </div>
     <div class="linebk"></div>
     <div class="probox ">
       <div class="ttitl">订单商品</div>
       <div class="te">下单前请确认个人信息</div>
       <div class="gdinfos">
-        <img :src="'http://beifan.400539.com' + skuInfos.pic" alt="">
+        <img :src="'http://beifan.400539.com' + gdInfo.product_img" alt="">
         <div class="gdinfs">
-          <div class="gdname">{{gdInfo.title}}</div>
-          <div class="gdname1">{{skuInfos.name}}</div>
+          <div class="gdname">{{gdInfo.product_name}}</div>
+          <div class="gdname1">{{gdInfo.product_tc}}</div>
           <div class="opts">
-            <div class="pirce">￥{{gdInfo.price}}</div>
-            <van-stepper v-model="infos.num" min="1" @change="stpChange" />
+            <div class="pirce">￥{{gdInfo.product_price}}</div>
+            <van-stepper disabled v-model="gdInfo.product_num" min="1" @change="stpChange" />
           </div>
         </div>
-      </div>
-      <div class="inputblock">
-        <div class="text">备注信息:</div>
-        <input type="text" v-model.trim="desc" placeholder="" class="reinput"/>
       </div>
     </div>
     <div class="probox ">
@@ -50,16 +42,16 @@
         <img v-else src="" alt="" class="uncheckicon checkicon">
       </div>
     </div>
-    <div class="optbtnsss">
-      <!-- <div class="forpos"></div> -->
-      <div class="desc">应付:<span>￥{{gdInfo.price * infos.num}}</span></div>
-      <div class="btns del" @click="delordess">取消订单</div>
-      <div class="btns" @click="subordess">提交订单</div>
+    <div v-if="gdInfo.status === 0 || gdInfo.status === 20" class="optbtnsss">
+      <div class="forpos"></div>
+      <div v-if="gdInfo.status === 0" class="desc">应付:<span>￥{{gdInfo.order_amount}}</span></div>
+      <div v-if="gdInfo.status === 0" class="btns" @click="sub">立即支付</div>
+      <div v-if="gdInfo.status === 20" class="btns" @click="sub">确认收货</div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { subOrder, sub1Order } from '@/api/mainpage'
+import { getOrderInfo, orderpay } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 declare var WeixinJSBridge: any;
 import { Mutation,
@@ -67,80 +59,53 @@ import { Mutation,
 const userModule = namespace('user')
 @Component({
 })
-export default class ShouHou extends Vue {
+export default class OrderInfo extends Vue {
   @userModule.State('skuInfos') private skuInfos: any;
-  @userModule.State('addrInfo') private addrInfo: any
-  @userModule.Mutation('SET_ADDRINFO') private setInfo: any
-  private gdInfo: any = {}
-  private selfGold: string = ''
-  private desc: string = ''
-  private infos: any = {
-    num: 1,
-    wecheck: 1
+  private gdInfo: any = {
+    user_name: '',
+    user_mobile: '',
+    product_tc: '',
   }
   private list: any[] = []
+  private infos: any = {
+    wecheck: 0
+  }
   private mounted(): void {
     document.title = '确认订单'
-    sub1Order({id: this.$route.params.id, tc: this.skuInfos.name}).then((res: any) => {
-      this.gdInfo = res.datas.product
-      this.selfGold = res.datas.money
-      if (!this.addrInfo.id) {
-        this.setInfo(res.datas.address)
-      }
+    getOrderInfo({id: this.$route.params.id}).then((res: any) => {
+      this.gdInfo = res.datas
     })
   }
   private setKind(mark: number) {
     if (mark) {
-      if (parseFloat(this.selfGold) <= 0) {
+      if (parseFloat(this.gdInfo.money) <= 0) {
         this.$toast('余额不足')
       } else {
         this.infos.wecheck = 1
       }
     }
   }
-  private subordess() {
-    if (this.infos.wecheck) {
-      this.$selfProm('', '确定', '取消', (ress: any) => {
-        console.log(ress);
-        this.sub(ress)
-      })
-    } else {
-      this.sub()
-    }
-  }
-  private delordess() {
-    this.$router.goBack()
-  }
-  private sub(ps = '') {
+  private sub() {
     const p = {
       id: this.$route.params.id,
-      tc: this.skuInfos.name,
-      num: this.infos.num,
       type: this.infos.wecheck,
-      desc: this.desc,
-      address_id: this.addrInfo.id,
-      paypwd: ps
     }
     const self = this
-    subOrder(p).then((res: any) => {
+    orderpay(p).then((res: any) => {
       // this.$toast(res.message)
-      if (self.infos.wecheck) {
-        self.$router.push('/myorder/0')
-      } else {
-        WeixinJSBridge.invoke(
-          'getBrandWCPayRequest',
-          res.datas,
-          (res2: any) => {
-            let result = res2.err_msg.split(':');
-            result = result[result.length - 1];
-            if ( result === 'ok' ) {
-              self.$router.push('/myorder/0')
-            } else {
-              alert('支付失败');
-              // _self.close()
-            }
-          })
-      }
+      WeixinJSBridge.invoke(
+        'getBrandWCPayRequest',
+        res.datas,
+        (res2: any) => {
+          let result = res2.err_msg.split(':');
+          result = result[result.length - 1];
+          if ( result === 'ok' ) {
+            self.$router.goBack()
+          } else {
+            alert('支付失败');
+            // _self.close()
+          }
+        })
     })
   }
   private stpChange(e: any) {
@@ -149,27 +114,6 @@ export default class ShouHou extends Vue {
 </script>
 <style lang="scss" scoped>
 @import "~@/styles/utils.scss";
-.banner{
-  height: pm(72);
-  display: flex;
-  padding: 0 pm(21);
-  color: white;
-  background: $m;
-  font-size: pm(14);
-  >*{
-    align-self: center;
-  }
-  img{
-    @include wh(43, 41);
-    margin-right: pm(7);
-  }
-}
-.inputblock{
-  margin-top: pm(18);
-  input{
-    flex: 1;
-  }
-}
 .optbtnsss{
   position: fixed;
   background: white;
@@ -182,8 +126,6 @@ export default class ShouHou extends Vue {
     align-self: center;
   }
   .desc{
-    flex: 1;
-    text-align: center;
     font-size: pm(13);
     color: #060606;
     span{
@@ -193,15 +135,12 @@ export default class ShouHou extends Vue {
   }
   .btns{
     @include wh(119, 47);
-    // margin-left: pm(17);
+    margin-left: pm(17);
     background: #FF3657;
     line-height: pm(47);
     text-align: center;
     color: white;
     font-size: pm(16);
-  }
-  .del{
-    background: #A0A0A0;
   }
 }
 .selfinfos{

@@ -9,7 +9,8 @@ import '@/styles/index.scss'
 
 import selfMsgBox from '@/components/selfMsgBox/index'
 Vue.use(selfMsgBox)
-
+import selfProm from '@/components/selfprom/index'
+Vue.use(selfProm)
 import Vant from 'vant';
 import 'vant/lib/index.css';
 import { Toast } from 'vant';

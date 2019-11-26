@@ -1,40 +1,49 @@
 <template>
   <div class="containers">
-    <img v-if="user.lv == 0" src="../../assets/user/lv0.png" alt="" class="bk"/>
-    <img v-if="user.lv == 1" src="../../assets/user/lv1.png" alt="" class="bk"/>
-    <img v-if="user.lv == 2" src="../../assets/user/lv2.png" alt="" class="bk"/>
-    <img v-if="user.lv == 3" src="../../assets/user/lv3.png" alt="" class="bk"/>
-    <img v-if="user.lv == 4" src="../../assets/user/lv4.png" alt="" class="bk"/>
-    <img v-if="user.lv == 5" src="../../assets/user/lv5.png" alt="" class="bk"/>
-    <img v-if="user.lv == 6" src="../../assets/user/lv6.png" alt="" class="bk"/>
+    <img v-if="user.level == 0" src="../assets/user/lv0.png" alt="" class="bk"/>
+    <img v-if="user.level == 1" src="../assets/user/lv1.png" alt="" class="bk"/>
+    <img v-if="user.level == 2" src="../assets/user/lv2.png" alt="" class="bk"/>
+    <img v-if="user.level == 3" src="../assets/user/lv3.png" alt="" class="bk"/>
+    <img v-if="user.level == 4" src="../assets/user/lv4.png" alt="" class="bk"/>
+    <img v-if="user.level == 5" src="../assets/user/lv5.png" alt="" class="bk"/>
+    <img v-if="user.level == 6" src="../assets/user/lv6.png" alt="" class="bk"/>
     <div class="ttname">公司名称：牛皮世家</div>
-    <div class="selectblock" @click="showLv = true">
-      <div class="text">{{user.lvName}}</div>
-      <img src="../../assets/image/shape.png" alt="" class="icon">
+    <!-- <div class="selectblock" @click="showLv = true"> -->
+    <div class="selectblock">
+      <div class="text">{{lvList[user.level - 1].lvname}}</div>
+      <img src="../assets/image/shape.png" alt="" class="icon">
       <div v-if="showLv" class="lvlist">
         <div v-if="idx < 4" class="item" v-for="(it, idx) in lvList" :key="idx" @click.stop="setLv(idx)">{{it.lvname}}</div>
       </div>
     </div>
-    <div class="addbtn larget" @click="$router.push('/invite')">生成发展链接</div>
+    <div v-if="user.level < 4" class="blockjf">
+      <div class="forpos"></div>
+      <div class="text">需交费￥1231</div>
+    </div>
+    <div class="forpos"></div>
+    <div v-if="user.level < 4" class="addbtn larget" @click="uplv">进行升级</div>
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { upLevel, getUserInfo } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import { getURLParams } from '@/utils/auth'
 import { lvList, sexs } from '@/utils/mainData'
 import Cookies from 'js-cookie'
+declare var WeixinJSBridge: any;
 @Component({
 })
-export default class Forget extends Vue {
+export default class LvManager extends Vue {
   private user: any = {
-    lv: 0,
-    lvName: '代理等级'
+    level: 1
   }
   private showLv: boolean = false
   private lvList: any[] = lvList
   private mounted(): void {
-    document.title = '推荐注册'
+    document.title = '等级管理'
+    getUserInfo({}).then((res: any) => {
+      this.user = res.datas
+    })
   }
   private setLv(idx: number): void {
     this.showLv = false
@@ -43,7 +52,8 @@ export default class Forget extends Vue {
   }
   private gopage(path: string) {
   }
-  private dpchange() {
+  private uplv() {
+    upLevel({})
   }
 }
 </script>
@@ -100,8 +110,15 @@ export default class Forget extends Vue {
       }
     }
   }
+  .blockjf{
+    display: flex;
+    margin: pm(20) pm(11) 0 pm(18);
+    font-size:pm(17);
+    color:rgba(242,76,75,1);
+  }
   .larget{
-    width: pm(285);
+    border-radius: 0 !important;
+    width: 100%;
     margin-top: pm(65);
   }
 }

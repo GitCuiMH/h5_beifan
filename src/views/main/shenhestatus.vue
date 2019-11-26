@@ -27,14 +27,15 @@
       </div>
     </div>
     <div class="opts">
-      <div class="btn">通过</div>
-      <div class="btn gbtn">不通过</div>
+      <div class="btn" @click="setStatus(1)">通过</div>
+      <div class="btn gbtn" @click="setStatus(2)">不通过</div>
       <div class="aldeal">已处理</div>
     </div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { setagStatus } from '@/api/mainpage'
 @Component({
 })
 export default class MmanagerDtl extends Vue {
@@ -44,8 +45,14 @@ export default class MmanagerDtl extends Vue {
   private mounted(): void {
     document.title = '合伙人审核'
   }
-  private save() {
-    this.$router.goBack()
+  private setStatus(st: number) {
+    setagStatus({id: this.$route.params.id, stauts: st}).then((res: any) => {
+      const str = st ? '已通过！' : '已拒绝！'
+      this.$toast(str)
+      setTimeout(() => {
+        this.$router.goBack()
+      }, 1000);
+    })
   }
 }
 </script>
