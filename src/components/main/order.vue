@@ -38,8 +38,9 @@
           </div>
           <div class="price">
             <div class="btns">
-              <div v-if="it.status == 10" class="pay bt" @click="getOrder(it)">接单发货</div>
-              <div v-if="it.status == 10" class="pay bt yell" @click="temSend(it)">平台发货</div>
+              <div v-if="it.status == 10 && it.is_df == 0" class="pay bt" @click="getOrder(it)">接单发货</div>
+              <div v-if="it.status == 10 && it.is_df == 0" class="pay bt yell" @click="temSend(it)">平台发货</div>
+              <div v-if="it.status == 10 && it.is_df == 1" class="desc">平台发货</div>
               <div v-if="it.status == 60" class="pay bt">退货/售后</div>
               <div v-if="it.status == 20" class="desc">订单完成</div>
             </div>
@@ -113,7 +114,7 @@ export default class Order extends Vue {
     this.getData()
   }
   private getOrder(obj: any) {
-    this.$router.push('/mchuhuo/' + obj.id)
+    this.$router.push('/mchuhuo/' + obj.id + '/' + obj.dl_mobile)
   }
   private temSend(obj: any) {
     df({id: obj.id}).then((res: any) => {

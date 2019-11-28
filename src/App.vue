@@ -32,6 +32,7 @@ export default class App extends Vue {
     'MzjReport',
     'MppPic',
     'MRrenz',
+    'Login',
   ]
   @Watch('$route', { immediate: true })
   private changeRouter(route: any) {
@@ -51,7 +52,9 @@ export default class App extends Vue {
     if (this.unCheck.includes(route.name) || route.name == null) {
 
     } else {
-      if (!Cookies.get('x_tk')) {
+      if (getURLParams().x_tk) {
+        Cookies.set('x_tk', getURLParams().x_tk, { expires: 3.33 })
+      } else if (!Cookies.get('x_tk')) {
         this.$router.push('/login')
       }
     }

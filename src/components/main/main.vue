@@ -52,13 +52,6 @@ declare var wx: any
 export default class HelloWorld extends Vue {
   private mounted(): void {
     document.title = '首页'
-    if (Cookies.get('x_tk')) {
-    } else if (getURLParams().x_tk) {
-      Cookies.set('x_tk', getURLParams().x_tk, { expires: 3.33 })
-    } else {
-      window.location.href = 'http://beifan.400539.com/api/wechat/login/type/main'
-      return
-    }
     jssdk({url: window.location.href}).then((res: any) => {
       // console.log(id);
       wx.config({

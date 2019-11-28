@@ -7,7 +7,12 @@
         <div class="out">支出： {{pageData.zc}}</div>
         <div class="in">收入： {{pageData.sr}}</div>
       </div>
-      <div class="tixianbtn" @click="$router.push('/stixian')">
+      <div class="tixianbtn" @click="$router.push('/chongzhi')">
+        <img src="../../assets/image/czicon.png" alt="" class="icon">
+        <div class="tixian">充值</div>
+        <div class="rightcon"></div>
+      </div>
+      <div class="tixianbtn tixianbtn2" @click="$router.push('/stixian')">
         <img src="../../assets/image/tixian.png" alt="" class="icon">
         <div class="tixian">提现</div>
         <div class="rightcon"></div>
@@ -133,7 +138,7 @@ export default class ZdList extends Vue {
     .tixianbtn{
       position: absolute;
       right: 0;
-      top: pm(52);
+      top: pm(33);
       color: white;
       font-size: pm(12);
       display: flex;
@@ -152,6 +157,9 @@ export default class ZdList extends Vue {
         margin: 0 pm(9) 0 pm(11);
         @include wh(7,7);
       }
+    }
+    .tixianbtn2{
+      top: pm(66);
     }
   }
   .opts{

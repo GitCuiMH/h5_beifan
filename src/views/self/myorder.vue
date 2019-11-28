@@ -38,7 +38,7 @@
           <div v-if="it.status == 30 || it.status == 100 || it.status == 40" class="del bt" @click.stop="setStatus(it.id, 2)">删除订单</div>
           <div v-if="it.status == 0" class="pay bt">去支付</div>
           <div v-if="it.status == 20" class="pay bt" @click.stop="setStatus(it.id, 3)">确认收货</div>
-          <div v-if="it.status == 30" class="pay bt" @click.stop="$router.push('/shouhou/' + it.id)">退货/售后</div>
+          <div v-if="it.status == 30" class="pay bt" @click.stop="$router.push('/shouhou/' + it.id)">换货/售后</div>
           <div v-if="it.status == 100" class="desc">订单已完成</div>
           <div v-if="it.status == 40" class="desc">订单已取消</div>
           <div v-if="it.status == 10" class="desc">待发货</div>

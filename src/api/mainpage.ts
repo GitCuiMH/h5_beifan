@@ -32,6 +32,14 @@ export const withdraw = (data: any) => {
     data
   })
 }
+// 微信解绑user/unBind
+export const unBind = (data: any) => {
+  return request({
+    url: 'user/unBind',
+    method: 'post',
+    data
+  })
+}
 // 实名认证/setRz
 export const setRz = (data: any) => {
   return request({
@@ -52,6 +60,14 @@ export const sendSms = (data: any) => {
 export const setPwd = (data: any) => {
   return request({
     url: 'login/setPwd',
+    method: 'post',
+    data
+  })
+}
+// 充值
+export const recharge = (data: any) => {
+  return request({
+    url: 'user/recharge',
     method: 'post',
     data
   })
@@ -192,6 +208,14 @@ export const getGdInfo = (data: any) => {
 export const invite = (data: any) => {
   return request({
     url: 'agent/invite',
+    method: 'post',
+    data
+  })
+}
+// 代理等级
+export const getLevel = (data: any) => {
+  return request({
+    url: 'agent/getLevel',
     method: 'post',
     data
   })

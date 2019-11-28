@@ -1,5 +1,13 @@
 <template>
   <div class="containers">
+    <div class="banner">
+      <img v-if="gdInfo.status === 0" src="../../assets/image/pay.png" alt="">
+      <span v-if="gdInfo.status === 0">待支付</span>
+      <img v-if="gdInfo.status !== 0" src="../../assets/image/get.png" alt="">
+      <span v-if="gdInfo.status === 20">等待确认收货</span>
+      <span v-if="gdInfo.status === 30">已确认收货</span>
+      <span v-if="gdInfo.status === 100">订单已完成</span>
+    </div>
     <div class="selfinfos">
       <div class="cjinfos">
         <div class="name">{{gdInfo.user_name}}
@@ -25,7 +33,7 @@
         </div>
       </div>
     </div>
-    <div class="probox ">
+    <div v-if="gdInfo.status === 0" class="probox ">
       <div class="ttitl">支付方式</div>
       <div class="paykind" @click="infos.wecheck = 0">
         <img src="../../assets/image/wechat.png" alt="" class="payicon">
@@ -42,16 +50,18 @@
         <img v-else src="" alt="" class="uncheckicon checkicon">
       </div>
     </div>
-    <div v-if="gdInfo.status === 0 || gdInfo.status === 20" class="optbtnsss">
-      <div class="forpos"></div>
+    <div v-if="gdInfo.status !== 100" class="optbtnsss">
+      <div v-if="gdInfo.status !== 0" class="forpos"></div>
       <div v-if="gdInfo.status === 0" class="desc">应付:<span>￥{{gdInfo.order_amount}}</span></div>
+      <div v-if="gdInfo.status === 0" class="btns del" @click="setStatus(gdInfo.id, 1)">取消订单</div>
       <div v-if="gdInfo.status === 0" class="btns" @click="sub">立即支付</div>
       <div v-if="gdInfo.status === 20" class="btns" @click="sub">确认收货</div>
+      <div v-if="gdInfo.status === 30" class="btns del" @click="$router.push('/shouhou/' + gdInfo.id)">换货/售后</div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { getOrderInfo, orderpay } from '@/api/mainpage'
+import { getOrderInfo, orderpay, setStatus } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 declare var WeixinJSBridge: any;
 import { Mutation,
@@ -68,7 +78,7 @@ export default class OrderInfo extends Vue {
   }
   private list: any[] = []
   private infos: any = {
-    wecheck: 0
+    wecheck: 1
   }
   private mounted(): void {
     document.title = '确认订单'
@@ -108,12 +118,39 @@ export default class OrderInfo extends Vue {
         })
     })
   }
+  private setStatus(id: number, kind: number) {
+    const str = ['取消订单？', '删除订单？', '收货？']
+    const st = [40, 50, 30]
+    this.$selfConfirm('确认' + str[kind - 1], '确定', '删除', (res2: any) => {
+      setStatus({id, status: st[kind - 1]}).then((res: any) => {
+        this.$toast(res.message)
+        setTimeout(() => {
+          this.$router.goBack()
+        }, 1000);
+      })
+    })
+  }
   private stpChange(e: any) {
   }
 }
 </script>
 <style lang="scss" scoped>
 @import "~@/styles/utils.scss";
+.banner{
+  height: pm(72);
+  display: flex;
+  padding: 0 pm(21);
+  color: white;
+  background: $m;
+  font-size: pm(14);
+  >*{
+    align-self: center;
+  }
+  img{
+    @include wh(43, 41);
+    margin-right: pm(7);
+  }
+}
 .optbtnsss{
   position: fixed;
   background: white;
@@ -126,6 +163,8 @@ export default class OrderInfo extends Vue {
     align-self: center;
   }
   .desc{
+    flex: 1;
+    text-align: center;
     font-size: pm(13);
     color: #060606;
     span{
@@ -135,12 +174,15 @@ export default class OrderInfo extends Vue {
   }
   .btns{
     @include wh(119, 47);
-    margin-left: pm(17);
+    // margin-left: pm(17);
     background: #FF3657;
     line-height: pm(47);
     text-align: center;
     color: white;
     font-size: pm(16);
+  }
+  .del{
+    background: #A0A0A0;
   }
 }
 .selfinfos{

@@ -87,7 +87,8 @@ export default class Login extends Vue {
     })
   }
   private weLogin() {
-    Cookies.set('x_tk', 'res.datas.token', { expires: 3.33 })
+    // Cookies.set('x_tk', 'res.datas.token', { expires: 3.33 })
+    Cookies.remove('x_tk')
     window.location.href = 'http://beifan.400539.com/api/wechat/login/type/main'
   }
   private gopage(path: string) {

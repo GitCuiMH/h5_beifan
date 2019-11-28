@@ -17,7 +17,7 @@
           </div>
           <div class="check">
             <img src="../../assets/user/renzhen.png" alt="" class="icon">
-            <div class="lvname">{{userInfo.ischeck ? '已实名认证' : '未认证'}}</div>
+            <div class="lvname">{{userInfo.is_rz ? '已实名认证' : '未认证'}}</div>
           </div>
         </div>
       </div>

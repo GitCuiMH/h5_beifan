@@ -18,14 +18,14 @@
     </div>
     <div v-if="user.level < 4" class="blockjf">
       <div class="forpos"></div>
-      <div class="text">需交费￥1231</div>
+      <div class="text">需交费￥{{priceList[user.level - 1].price}}</div>
     </div>
     <div class="forpos"></div>
     <div v-if="user.level < 4" class="addbtn larget" @click="uplv">进行升级</div>
   </div>
 </template>
 <script lang="ts">
-import { upLevel, getUserInfo } from '@/api/mainpage'
+import { upLevel, getUserInfo, getLevel } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import { getURLParams } from '@/utils/auth'
 import { lvList, sexs } from '@/utils/mainData'
@@ -37,12 +37,16 @@ export default class LvManager extends Vue {
   private user: any = {
     level: 1
   }
+  private priceList: any[] = []
   private showLv: boolean = false
   private lvList: any[] = lvList
   private mounted(): void {
     document.title = '等级管理'
     getUserInfo({}).then((res: any) => {
       this.user = res.datas
+    })
+    getLevel({}).then((res: any) => {
+      this.priceList = res.datas
     })
   }
   private setLv(idx: number): void {
@@ -53,7 +57,8 @@ export default class LvManager extends Vue {
   private gopage(path: string) {
   }
   private uplv() {
-    upLevel({})
+    upLevel({level: this.user.level + 1}).then((res: any) => {
+    })
   }
 }
 </script>

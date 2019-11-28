@@ -15,7 +15,7 @@
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
+import { unBind } from '@/api/mainpage'
 import { Component, Vue } from 'vue-property-decorator';
 import Cookies from 'js-cookie'
 @Component({
@@ -30,8 +30,15 @@ export default class Setting extends Vue {
   private alerts(i: number) {
     const str = i === 1 ? '确定解绑微信？' : '确定退出登录？'
     this.$selfConfirm(str, '确定', '取消', (res: any) => {
-      Cookies.remove('x_tk')
-      this.$router.replace('/login')
+      if (i === 1) {
+        unBind({}).then((res2: any) => {
+          Cookies.remove('x_tk')
+          this.$router.replace('/login')
+        })
+      } else {
+        Cookies.remove('x_tk')
+        this.$router.replace('/login')
+      }
     })
   }
 }
