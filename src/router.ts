@@ -23,12 +23,6 @@ export default new Router({
     },
     // 等级管理
     {
-      path: '/about',
-      name: 'about',
-      component: () => import('@/views/About.vue'),
-    },
-    // 等级管理
-    {
       path: '/lvmanage',
       name: 'LvManager',
       component: () => import('@/views/lvmanager.vue'),
