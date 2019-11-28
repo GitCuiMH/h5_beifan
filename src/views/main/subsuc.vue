@@ -10,7 +10,6 @@
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
 import { Component, Vue } from 'vue-property-decorator';
 import Cookies from 'js-cookie'
 @Component({

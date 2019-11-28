@@ -19,7 +19,6 @@
   </div>
 </template>
 <script lang="ts">
-import { getSelfInfo } from '@/api/hospital'
 import { Component, Vue } from 'vue-property-decorator';
 import { getURLParams } from '@/utils/auth'
 import { lvList, sexs } from '@/utils/mainData'
