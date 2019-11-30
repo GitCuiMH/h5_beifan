@@ -11,7 +11,7 @@
           <img src="../../assets/index/sao.png" alt="" class="icon">
           <div class="text">商品扫码</div>
         </div>
-        <div class="item" @click="gopage('/mchuhuo/0')">
+        <div class="item" @click="gopage('/mchuhuo/0/0')">
           <img src="../../assets/index/chuhuo.png" alt="" class="icon">
           <div class="text">商品出货</div>
         </div>
@@ -30,7 +30,6 @@
           <div class="text">数据统计</div>
         </div>
       </div>
-      
     </div>
     <div class="probox boxshadow">
       <div class="title leftborder">常用应用</div>

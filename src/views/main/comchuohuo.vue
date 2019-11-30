@@ -146,7 +146,7 @@ export default class Set extends Vue {
     desc: '',
   }
   private mounted(): void {
-    this.pageData.mobile = this.$route.params.m
+    this.pageData.mobile = parseInt(this.$route.params.m, 10) === 0 ? '' : this.$route.params.m
     document.title = '代理出货'
     this.pageData.oid = this.$route.params.id
     jssdk({url: window.location.href}).then((res: any) => {
